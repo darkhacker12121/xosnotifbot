@@ -6,11 +6,12 @@ import sys
 
 # Library imports
 import telegram
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import Updater, CommandHandler, MessageHandler
 import logging
 
 # Project imports
 import commands
+import custom_filters
 
 argv_len = len(sys.argv) - 1
 
@@ -71,6 +72,8 @@ def start_bot():
   print("Setting up handlers...")
   for command in commands.commands:
     dispatcher.add_handler(CommandHandler(command[0], command[1]))
+  for filter_ in custom_filters.filters:
+    dispatcher.add_handler(MessageHandler(filter_[0], filter_[1]))
   print("Listening.")
   updater.idle()
   print("Stopped")
