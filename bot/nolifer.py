@@ -37,11 +37,13 @@ if argv_len < 1 and not "NOLIFER_TG_TOKEN" in os.environ:
   exit(1)
 
 bot_token = os.environ['NOLIFER_TG_TOKEN'] if argv_len < 1 else sys.argv[1]
+# TODO: implement this dynamically
+bot_instance = 1
 bot_dir = os.path.dirname(os.path.abspath(__file__))
 bot = None
 updater = None
 dispatcher = None
-webhook_url_path = "NOLIFER"
+webhook_url_path = "%s-%i" % (bot_token, bot_instance)
 webhook_port = int(os.environ['NOLIFER_WEBHOOK_PORT']) \
                 if "NOLIFER_WEBHOOK_PORT" in os.environ \
                 else 24627
