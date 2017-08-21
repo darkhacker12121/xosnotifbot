@@ -1,4 +1,3 @@
-#!/bin/bash
 #
 # Telegram Bot written in Python for halogenOS
 # Copyright (C) 2017  Simao Gomes Viana
@@ -16,24 +15,3 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-
-echo "This script will download all necessary files and set up this bot" \
-     "for immediate use. Make sure you have an active internet connection."
-
-which curl 2>&1 >/dev/null
-if [ $? -eq 0 ]; then
-  echo "  Doing connectivity check..."
-  curl http://connectivitycheck.gstatic.com/generate_204
-  if [ $? -ne 0 ]; then
-    echo "  Connectivity check failed! Use a working internet connection."
-    exit 1
-  else
-    echo "  Connectivity check successful."
-  fi
-fi
-
-echo "Starting setup..."
-cd bot
-./fetch-and-setup.sh
-
-exit $?
