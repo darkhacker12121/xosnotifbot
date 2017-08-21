@@ -11,3 +11,8 @@ def get_id(bot, update):
 
 def runs(bot, update):
   update.message.reply_text("Where u going so fast?!")
+
+commands = [
+  ["id", get_id],
+  ["runs", runs],
+]
