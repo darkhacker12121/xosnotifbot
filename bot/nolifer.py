@@ -70,6 +70,7 @@ def start_bot():
   print("Updater successfully set up.")
   print("Setting up handlers...")
   dispatcher.add_handler(CommandHandler("id", commands.get_id))
+  dispatcher.add_handler(CommandHandler("runs", commands.runs))
   print("Listening.")
   updater.idle()
   print("Stopped")
