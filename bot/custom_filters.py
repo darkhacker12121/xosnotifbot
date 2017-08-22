@@ -16,6 +16,9 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+# Python imports
+import re
+
 # Library imports
 from telegram.ext import BaseFilter
 
@@ -37,10 +40,13 @@ def on_hash_message(bot, update):
      update.message.chat_id == 11814515:
     if hashtag_item == "latest":
       try:
-        file = open(_latest_build_file % \
-                      msg_split[1] if len(msg_split) > 1 else "oneplus2", "r")
-        update.message.reply_text(file.read())
-        file.close()
+        if len(msg_split) > 1 and re.match('^[\w-]+$', msg_split[1]) is None:
+          update.message.reply_text("Nice try ;)")
+        else:
+          file = open(_latest_build_file % \
+                      (msg_split[1] if len(msg_split) > 1 else "oneplus2"), "r")
+          update.message.reply_text(file.read())
+          file.close()
       except Exception as e:
         print("Error while getting latest: %s" % e)
     elif hashtag_item == "modem":
