@@ -19,6 +19,7 @@
 # Python imports
 import os
 import sys
+import requests
 from subprocess import call
 from os.path import expanduser
 
@@ -56,6 +57,23 @@ def launch_build(bot, update):
     human_friendly_description = ""
     if len(split_msg) >= 1:
       target_device = split_msg[0]
+      page = 1
+      api_url_tpl = 'https://api.github.com/orgs/halogenOS/repos?page=%s'
+      r = requests.get(api_url_tpl % page)
+      has_found_device = False
+      while not has_found_device and len(r.json()) > 0:
+        for entry in r.json():
+          print(entry["name"])
+          if entry["name"] != None and target_device in entry["name"]:
+            print("Found %s" % entry["name"])
+            has_found_device = True
+            break
+        page += 1
+        r = requests.get(api_url_tpl % page)
+      if not has_found_device:
+        update.message.reply_text("Device %s does not exist on our org" \
+                                  % target_device)
+        return
       final_command += " -p 'Target_device=%s'" % target_device
       human_friendly_description += "Device: %s\n" % target_device
       is_release = False
