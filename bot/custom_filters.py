@@ -21,7 +21,8 @@ from telegram.ext import BaseFilter
 
 class HashMessageFilter(BaseFilter):
   def filter(self, message):
-    return len(message.text) >= 2 and message.text[0] == '#'
+    return message.text != None and \
+            len(message.text) >= 2 and message.text[0] == '#'
 
 def on_hash_message(bot, update):
   msg_split = update.message.text.split()
