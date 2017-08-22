@@ -25,19 +25,34 @@ from os.path import expanduser
 # Library imports
 import telegram
 
+# Project imports
+from utils import getenviron
+
 def get_id(bot, update):
   update.message.reply_text("ID: %s" % update.message.chat_id)
 
 def runs(bot, update):
   update.message.reply_text("Where u going so fast?!")
 
+_jenkins_address = getenviron("NOLIFER_JENKINS_ADDR", "localhost")
+_jenkins_port = int(getenviron("NOLIFER_JENKINS_PORT", "6692"))
+_jenkins_user = getenviron("NOLIFER_JENKINS_USER", "xdevs23")
+_jenkins_project = getenviron("NOLIFER_JENKINS_PROJECT", "halogenOS")
+_jenkins_ssh_key = getenviron("NOLIFER_JENKINS_SSHKEY",
+                              "%s/.ssh/id_rsa" % expanduser("~"))
 def launch_build(bot, update):
   # Family group or my private chat
   if update.message.chat_id == -1001068076699 or \
      update.message.chat_id == 11814515:
     split_msg = update.message.text[len("/build "):].split()
-    final_command = "ssh -l xdevs23 -i %s/.ssh/id_rsa localhost " \
-                    "-p 6692 build halogenOS" % expanduser("~")
+    final_command = "ssh -l %s -i %s %s -p %i build %s" \
+                      % (
+                         _jenkins_user,
+                         _jenkins_ssh_key,
+                         _jenkins_address,
+                         _jenkins_port,
+                         _jenkins_project
+                        )
     human_friendly_description = ""
     if len(split_msg) >= 1:
       target_device = split_msg[0]
