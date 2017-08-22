@@ -20,6 +20,7 @@
 import os
 import sys
 from subprocess import call
+from os.path import expanduser
 
 # Library imports
 import telegram
@@ -35,8 +36,8 @@ def launch_build(bot, update):
   if update.message.chat_id == -1001068076699 or \
      update.message.chat_id == 11814515:
     split_msg = update.message.text[len("/build "):].split()
-    final_command = "ssh -l xdevs23 -i /home/simao/.ssh/id_rsa localhost " \
-                    "-p 6692 build halogenOS"
+    final_command = "ssh -l xdevs23 -i %s/.ssh/id_rsa localhost " \
+                    "-p 6692 build halogenOS" % expanduser("~")
     human_friendly_description = ""
     if len(split_msg) >= 1:
       target_device = split_msg[0]
