@@ -33,7 +33,8 @@ class HashMessageFilter(BaseFilter):
 def on_hash_message(bot, update):
   msg_split = update.message.text.split()
   hashtag_item = msg_split[0][1:]
-  if update.message.chat_id == -1001068076699:
+  if update.message.chat_id == -1001068076699 or \
+     update.message.chat_id == 11814515:
     if hashtag_item == "latest":
       try:
         file = open(_latest_build_file % \
