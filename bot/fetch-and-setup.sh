@@ -55,8 +55,8 @@ if [ $? -ne 0 ] || [ "$result_ns" != "success" ]; then
   echo "  and that the script 'nolifer.py' is executable. Exiting now."
   exit 1
 fi
-echo "Done. Start the bot using this command:"
-echo "  ./nolifer <telegram bot token>"
+echo "Done. In the bot directory start the bot using this command:"
+echo "  ./nolifer.py <telegram bot token>"
 echo
 echo "Set the environment variable NOLIFER_TG_TOKEN if you don't want to" \
      "pass it as environment variable"
