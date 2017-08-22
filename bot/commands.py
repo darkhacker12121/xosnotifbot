@@ -145,10 +145,13 @@ def launch_build(bot, update):
     else:
       update.message.reply_text("Please specify a device like: /build oneplus2")
       return
-    call(final_command.split())
-    update.message.reply_text("%s build launched\n\n%s" \
-                                % ("Release" if is_release else "Test",
-                               human_friendly_description.replace("[[NEWLINE]]", "\n")))
+    result_ = call(final_command.split())
+    if not result_:
+      update.message.reply_text("%s build launched\n\n%s" \
+                                  % ("Release" if is_release else "Test",
+                                 human_friendly_description.replace("[[NEWLINE]]", "\n")))
+    else:
+      update.message.reply_text("Cannot launch build, error code %i", result_)
 
 commands = [
   ["id", get_id],
