@@ -19,6 +19,12 @@
 # Library imports
 from telegram.ext import BaseFilter
 
+# Project imports
+from utils import getenviron
+
+_latest_build_file = getenviron("NOLIFER_LATEST_BUILD_FILE",
+                    "/var/lib/jenkins/workspace/halogenOS/%s-latest.txt")
+
 class HashMessageFilter(BaseFilter):
   def filter(self, message):
     return message.text != None and \
@@ -30,8 +36,8 @@ def on_hash_message(bot, update):
   if update.message.chat_id == -1001068076699:
     if hashtag_item == "latest":
       try:
-        file = open("/var/lib/jenkins/workspace/halogenOS/oneplus2-latest.txt",
-                    "r")
+        file = open(_latest_build_file % \
+                      msg_split[1] if len(msg_split) > 1 else "oneplus2", "r")
         update.message.reply_text(file.read())
         file.close()
       except Exception as e:
