@@ -19,7 +19,8 @@
 
 echo
 echo "Cloning python telegram bot API repository"
-git clone https://github.com/python-telegram-bot/python-telegram-bot.git
+git clone https://github.com/python-telegram-bot/python-telegram-bot.git \
+    --recursive
 echo "Preparing python telegram bot setup"
 cd python-telegram-bot
 if [ "$(whoami)" != "root" ]; then
