@@ -41,6 +41,8 @@ _jenkins_user = getenviron("NOLIFER_JENKINS_USER", "xdevs23")
 _jenkins_project = getenviron("NOLIFER_JENKINS_PROJECT", "halogenOS")
 _jenkins_ssh_key = getenviron("NOLIFER_JENKINS_SSHKEY",
                               "%s/.ssh/id_rsa" % expanduser("~"))
+_jenkins_rom_ver_param = getenviron("NOLIFER_ROM_VER_PARAM", "XOS_Version")
+_rom_versions = getenviron("NOLIFER_ROM_VERSIONS", "8.0,7.1").split(",")
 def launch_build(bot, update):
   # Family group or my private chat
   if update.message.chat_id == -1001068076699 or \
@@ -100,6 +102,16 @@ def launch_build(bot, update):
           build_type = "user"
         elif "eng" in split_msg:
           build_type = "eng"
+
+        rom_version = _rom_versions[0]
+
+        for ver in _rom_versions:
+          if ver in split_msg:
+            rom_version = ver
+            break
+
+        final_command += " -p '%s=%s'" % (_jenkins_rom_ver_param, rom_version)
+        human_friendly_description += "ROM Version: %s\n" % rom_version
 
         if build_type in split_msg:
           split_msg.remove(build_type)
