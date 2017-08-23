@@ -108,6 +108,7 @@ def launch_build(bot, update):
         for ver in _rom_versions:
           if ver in split_msg:
             rom_version = ver
+            split_msg.remove(ver)
             break
 
         final_command += " -p '%s=%s'" % (_jenkins_rom_ver_param, rom_version)
