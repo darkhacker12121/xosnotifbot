@@ -58,7 +58,7 @@ def launch_build(bot, update):
                          _jenkins_project
                         )
         human_friendly_description = ""
-        if len(split_msg) >= 1:
+        if split_msg:
             target_device = split_msg[0]
             page = 1
             api_url_tpl = 'https://api.github.com/orgs/halogenOS/repos?page=%s'
@@ -71,7 +71,7 @@ def launch_build(bot, update):
             else:
                 r = requests.get(api_url_tpl % page)
             has_found_device = False
-            while not has_found_device and len(r.json()) > 0:
+            while not has_found_device and r.json():
                 if "message" in r.json() and \
                     "API rate limit exceeded" in r.json()["message"]:
                         update.message.reply_text(
@@ -169,7 +169,7 @@ def launch_build(bot, update):
                         had_repopick = True
                         repopick_list.replace(
                             "[[NEWLINE]][[NEWLINE]]", "[[NEWLINE]]")
-                    elif len(module_to_build) == 0:
+                    elif not module_to_build:
                         module_to_build = arg
                     else:
                         update.message.reply_text(
@@ -182,7 +182,7 @@ def launch_build(bot, update):
                                         % repopick_list
                     human_friendly_description += "Stuff to repopick:\n%s\n" \
                                                         % repopick_list
-                if len(module_to_build) > 0:
+                if module_to_build:
                     final_command += " -p 'Module_to_build=%s'" % \
                                         module_to_build
                     human_friendly_description += "Module: %s\n" % \
