@@ -43,6 +43,7 @@ _jenkins_ssh_key = getenviron("NOLIFER_JENKINS_SSHKEY",
                               "%s/.ssh/id_rsa" % expanduser("~"))
 _jenkins_rom_ver_param = getenviron("NOLIFER_ROM_VER_PARAM", "XOS_Version")
 _rom_versions = getenviron("NOLIFER_ROM_VERSIONS", "8.0,7.1").split(",")
+_github_auth_token = getenviron("NOLIFER_GITHUB_TOKEN", "")
 def launch_build(bot, update):
   # Family group or my private chat
   if update.message.chat_id == -1001068076699 or \
@@ -61,7 +62,13 @@ def launch_build(bot, update):
       target_device = split_msg[0]
       page = 1
       api_url_tpl = 'https://api.github.com/orgs/halogenOS/repos?page=%s'
-      r = requests.get(api_url_tpl % page)
+      r = None
+      if _github_auth_token != "":
+        r = requests.get(api_url_tpl % page, headers={
+          'Authorization': 'token %s' % _github_auth_token
+        })
+      else:
+        r = requests.get(api_url_tpl % page)
       has_found_device = False
       while not has_found_device and len(r.json()) > 0:
         for entry in r.json():
