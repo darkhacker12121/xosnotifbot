@@ -71,6 +71,11 @@ def launch_build(bot, update):
         r = requests.get(api_url_tpl % page)
       has_found_device = False
       while not has_found_device and len(r.json()) > 0:
+        if "message" in r.json() and \
+          "API rate limit exceeded" in r.json()["message"]:
+            update.message.reply_text("API rate limit exceeded for my IP, can't"
+                                      " check whether the device tree exists")
+            return
         for entry in r.json():
           print(entry["name"])
           if entry["name"] != None and target_device in entry["name"]:
