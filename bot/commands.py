@@ -64,6 +64,7 @@ def launch_build(bot, update):
       api_url_tpl = 'https://api.github.com/orgs/halogenOS/repos?page=%s'
       r = None
       if _github_auth_token != "":
+        print("GitHub authorization token available.")
         r = requests.get(api_url_tpl % page, headers={
           'Authorization': 'token %s' % _github_auth_token
         })
