@@ -45,9 +45,10 @@ def on_hash_message(bot, update):
                         re.match('^[\w-]+$', msg_split[1]) is None:
                     update.message.reply_text("Nice try ;)")
                 else:
-                    file = open(_latest_build_file % \
-                                (msg_split[1] \
-                                    if len(msg_split) > 1 else "oneplus2"), "r")
+                    file = open(
+                        _latest_build_file \
+                            % (msg_split[1] \
+                                if len(msg_split) > 1 else "oneplus2"), "r")
                     update.message.reply_text(file.read())
                     file.close()
             except Exception as e:

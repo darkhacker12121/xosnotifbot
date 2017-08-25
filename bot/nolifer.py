@@ -51,9 +51,9 @@ webhook_listen = os.environ['NOLIFER_WEBHOOK_LISTEN'] \
                                     if "NOLIFER_WEBHOOK_LISTEN" in os.environ \
                                     else '127.0.0.1'
 webhook_url = "https://%s/%s" % \
-                                (os.environ['NOLIFER_WEBHOOK_BASEURL'] \
-                                    if "NOLIFER_WEBHOOK_BASEURL" in os.environ \
-                                    else webhook_listen, webhook_url_path)
+                            (os.environ['NOLIFER_WEBHOOK_BASEURL'] \
+                                if "NOLIFER_WEBHOOK_BASEURL" in os.environ \
+                                else webhook_listen, webhook_url_path)
 
 def start_bot():
     print("Starting bot located at %s" % bot_dir)

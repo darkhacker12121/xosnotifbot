@@ -74,9 +74,10 @@ def launch_build(bot, update):
             while not has_found_device and len(r.json()) > 0:
                 if "message" in r.json() and \
                     "API rate limit exceeded" in r.json()["message"]:
-                        update.message.reply_text("API rate limit exceeded for "
-                                                  "my IP, can't check whether "
-                                                  "the device tree exists")
+                        update.message.reply_text(
+                            "API rate limit exceeded for my IP, can't check "
+                            "whether the device tree exists"
+                        )
                         return
                 for entry in r.json():
                     if "name" in entry:
@@ -94,8 +95,8 @@ def launch_build(bot, update):
                 else:
                     r = requests.get(api_url_tpl % page)
             if not has_found_device:
-                update.message.reply_text("Device %s does not exist on our org"\
-                                            % target_device)
+                update.message.reply_text(
+                    "Device %s does not exist on our org" % target_device)
                 return
             final_command += " -p 'Target_device=%s'" % target_device
             human_friendly_description += "Device: %s\n" % target_device
@@ -111,10 +112,11 @@ def launch_build(bot, update):
                     split_msg.remove("noreset")
                     human_friendly_description += "No git reset\n"
                 if "release" in split_msg:
-                    final_command += " -p " \
-                                     "'Prepare_for_official_release=true' -p " \
-                                     "'Do_release=true' -p " \
-                                     "'Auto_release=true'"
+                    final_command += \
+                        " -p " \
+                        "'Prepare_for_official_release=true' -p " \
+                        "'Do_release=true' -p " \
+                        "'Auto_release=true'"
                     split_msg.remove("release")
                     is_release = True
 
@@ -156,8 +158,9 @@ def launch_build(bot, update):
                                 if j == len(split_msg) - 1:
                                     repopick_list = repopick_list[:-1]
                             else:
-                                repopick_list += "[[NEWLINE]]-t %s[[NEWLINE]]" \
-                                                    % split_msg[j + 1]
+                                repopick_list += \
+                                    "[[NEWLINE]]-t %s[[NEWLINE]]" \
+                                        % split_msg[j + 1]
                                 if j + 1 == len(split_msg) - 1:
                                     repopick_list = \
                                         repopick_list[:-(len("[[NEWLINE]]"))]
