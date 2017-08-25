@@ -7,7 +7,7 @@ Python from scratch.
 
 Make sure Python 3 is installed.<br>
 You will need following packages which you can install using pip or the
-package manager of your system (e. g. by prepending `python3-`:
+package manager of your system (e. g. by prepending `python3-`):
 ```
 requests certifi future
 ```
