@@ -5,7 +5,15 @@ Python from scratch.
 
 ## Setup
 
-Make sure Python is installed.<br>
+Make sure Python 3 is installed.<br>
+You will need following packages which you can install using pip or the
+package manager of your system (e. g. by prepending `python3-`:
+```
+requests certifi future
+```
+In case packages are missing, please let me know so that I can add them here.
+<br>
+
 Clone the repo and execute the setup script:
 
 ```
