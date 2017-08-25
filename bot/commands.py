@@ -77,11 +77,12 @@ def launch_build(bot, update):
                                       " check whether the device tree exists")
             return
         for entry in r.json():
-          print(entry["name"])
-          if entry["name"] != None and target_device in entry["name"]:
-            print("Found %s" % entry["name"])
-            has_found_device = True
-            break
+          if "name" in entry:
+            print(entry["name"])
+            if entry["name"] != None and target_device in entry["name"]:
+              print("Found %s" % entry["name"])
+              has_found_device = True
+              break
         page += 1
         r = requests.get(api_url_tpl % page)
       if not has_found_device:
