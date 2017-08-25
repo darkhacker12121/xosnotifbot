@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Telegram Bot written in Python for halogenOS
 # Copyright (C) 2017  Simao Gomes Viana
