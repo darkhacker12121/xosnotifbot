@@ -85,7 +85,12 @@ def launch_build(bot, update):
               has_found_device = True
               break
         page += 1
-        r = requests.get(api_url_tpl % page)
+        if _github_auth_token != "":
+          r = requests.get(api_url_tpl % page, headers={
+            'Authorization': 'token %s' % _github_auth_token
+          })
+        else:
+          r = requests.get(api_url_tpl % page)
       if not has_found_device:
         update.message.reply_text("Device %s does not exist on our org" \
                                   % target_device)
