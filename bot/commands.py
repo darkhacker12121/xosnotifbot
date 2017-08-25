@@ -140,20 +140,21 @@ def launch_build(bot, update):
           if had_repopick: break
           if "repopick" in arg:
             start_repopick_ix = split_msg.index(arg)
-            for i in range(start_repopick_ix + 1, len(split_msg) - 1):
-              if split_msg[i] != "-t":
-                repopick_list += "%s," % split_msg[i]
-                if i == len(split_msg) - 1:
+            j = start_repopick_ix + 1
+            while j < len(split_msg):
+              if split_msg[j] != "-t":
+                repopick_list += "%s," % split_msg[j]
+                if j == len(split_msg) - 1:
                   repopick_list = repopick_list[:-1]
               else:
-                if len(repopick_list) > 0:
-                  repopick_list = repopick_list[:-1]
                 repopick_list += "[[NEWLINE]]-t %s[[NEWLINE]]" \
-                                    % split_msg[i + 1]
-                if i + 1 == len(split_msg) - 1:
+                                    % split_msg[j + 1]
+                if j + 1 == len(split_msg) - 1:
                   repopick_list = repopick_list[:-(len("[[NEWLINE]]"))]
-                i += 1
+                j += 1
+              j += 1
             had_repopick = True
+            repopick_list.replace("[[NEWLINE]][[NEWLINE]]", "[[NEWLINE]]")
           elif len(module_to_build) == 0:
             module_to_build = arg
           else:
