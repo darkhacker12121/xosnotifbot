@@ -87,6 +87,7 @@ def launch_build(bot, update):
                     if "name" in entry:
                         print(entry["name"])
                         if entry["name"] != None and \
+                                "android_device_" in entry["name"] and \
                                 target_device in entry["name"]:
                             print("Found %s" % entry["name"])
                             has_found_device = True
