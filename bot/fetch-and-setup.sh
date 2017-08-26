@@ -41,13 +41,18 @@ sudo python setup.py install
 cd ..
 echo "Symlinking telegram module"
 ln -sf python-telegram-bot/telegram telegram
-echo "Generating SSL certificate"
 cd ..
-mkdir -p cruft
-cd cruft
-openssl req -newkey rsa:2048 -sha256 -nodes -keyout private.key -x509 -days 3650 -out cert.pem
-echo "  SSL certificate is valid for 10 years from now."
-cd ../bot
+if [ -f "cruft/cert.pem" ] && [ -f "cruft/private.key" ]; then
+  echo "SSL certificate already exists, not generating a new one."
+else
+  echo "Generating SSL certificate"
+  mkdir -p cruft
+  cd cruft
+  openssl req -newkey rsa:2048 -sha256 -nodes -keyout private.key -x509 -days 3650 -out cert.pem
+  echo "  SSL certificate is valid for 10 years from now."
+  cd ..
+fi
+cd bot
 echo "Doing sanity check"
 result_ns="$(./nolifer.py sanity-check)"
 if [ $? -ne 0 ] || [ "$result_ns" != "success" ]; then
