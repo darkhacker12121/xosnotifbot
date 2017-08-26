@@ -48,7 +48,11 @@ def launch_build(bot, update):
     # Family group or my private chat
     if update.message.chat_id == -1001068076699 or \
        update.message.chat_id == 11814515:
-        split_msg = update.message.text[len("/build "):].split()
+        msg_no_split = update.message.text[len("/build "):]
+        if "'" in msg_no_split or '"' in msg_no_split or ";" in msg_no_split:
+            update.message.reply_text("Don't even try")
+            return
+        split_msg = msg_no_split.split()
         final_command = "ssh -l %s -i %s %s -p %i build %s" \
                     % (
                          _jenkins_user,
