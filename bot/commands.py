@@ -44,6 +44,8 @@ _jenkins_ssh_key = getenviron("NOLIFER_JENKINS_SSHKEY",
 _jenkins_rom_ver_param = getenviron("NOLIFER_ROM_VER_PARAM", "XOS_Version")
 _rom_versions = getenviron("NOLIFER_ROM_VERSIONS", "8.0,7.1").split(",")
 _github_auth_token = getenviron("NOLIFER_GITHUB_TOKEN", "")
+_ssh_known_hosts_file = getenviron("NOLIFER_KNOWN_HOSTS_FILE",
+                                   "%s/.ssh/known_hosts" % expanduser("~"))
 def launch_build(bot, update):
     # Family group or my private chat
     if update.message.chat_id == -1001068076699 or \
@@ -53,10 +55,11 @@ def launch_build(bot, update):
             update.message.reply_text("Don't even try")
             return
         split_msg = msg_no_split.split()
-        final_command = "ssh -l %s -i %s %s -p %i build %s" \
+        final_command = "ssh -l %s -i %s -o UserKnownHostsFile=%s %s -p %i build %s" \
                     % (
                          _jenkins_user,
                          _jenkins_ssh_key,
+                         _ssh_known_hosts_file,
                          _jenkins_address,
                          _jenkins_port,
                          _jenkins_project
