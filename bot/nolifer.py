@@ -88,6 +88,21 @@ def start_bot():
         print("Error while initializing updater: %s" % e)
         exit(1)
     print("Updater successfully set up.")
+    print("Checking for recent restart...")
+    try:
+        tmpfile = open("/tmp/nolifer-stop-reason", "r")
+        filecont = tmpfile.readline().strip().split()
+        reason = filecont[0]
+        chat_id = filecont[1]
+        tmpfile.close()
+        if reason == "restart":
+            bot.sendMessage(chat_id=chat_id,
+                            text="Restart successful.")
+        os.remove("/tmp/nolifer-stop-reason")
+    except:
+        # Don't bother
+        print("Not bothering about stop reason")
+
     print("Setting up handlers...")
     for command in commands.commands:
         dispatcher.add_handler(CommandHandler(command[0], command[1]))

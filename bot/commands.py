@@ -20,6 +20,7 @@
 import os
 import sys
 import requests
+import signal
 from subprocess import call
 from os.path import expanduser
 
@@ -210,8 +211,22 @@ def launch_build(bot, update):
             update.message.reply_text("Cannot launch build, error code %i",
                                         result_)
 
+def restart_bot(bot, update):
+    if update.message.chat_id == -1001068076699 or \
+       update.message.chat_id == 11814515:
+        update.message.reply_text("Restarting...")
+        tmpfile = open("/tmp/nolifer-stop-reason", "w")
+        tmpfile.write("restart %s" % update.message.chat_id)
+        tmpfile.flush()
+        tmpfile.close()
+        # Send SIGTERM to terminate normally
+        os.kill(os.getpid(), signal.SIGTERM)
+    else:
+        update.message.reply_text("Sorry, you are not allowed to do that here")
+
 commands = [
     ["id", get_id],
     ["runs", runs],
     ["build", launch_build],
+    ["restart", restart_bot],
 ]
