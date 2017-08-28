@@ -59,6 +59,17 @@ def on_hash_message(bot, update):
 
 hash_message_filter = HashMessageFilter()
 
+class PolFilter(BaseFilter):
+    def filter(self, message):
+        return message.text != None and \
+                re.search('(\W+|^)pol(\W+|$)', message.text, re.M|re.I)
+
+def on_pol_message(bot, update):
+    update.message.reply_text("Dat beer tho")
+
+pol_filter = PolFilter()
+
 filters = [
     [hash_message_filter, on_hash_message],
+    [pol_filter, on_pol_message],
 ]
