@@ -27,12 +27,11 @@ from telegram.ext import Updater, CommandHandler, MessageHandler
 import logging
 
 # Project imports
-import commands
-import custom_filters
+from bot import commands, custom_filters
 
 argv_len = len(sys.argv) - 1
 
-if argv_len < 1 and not "NOLIFER_TG_TOKEN" in os.environ:
+if argv_len < 1 and "NOLIFER_TG_TOKEN" not in os.environ:
     print("Please specify your token or export it as NOLIFER_TG_TOKEN")
     exit(1)
 
@@ -40,20 +39,17 @@ bot_token = os.environ['NOLIFER_TG_TOKEN'] if argv_len < 1 else sys.argv[1]
 # TODO: implement this dynamically
 bot_instance = 1
 bot_dir = os.path.dirname(os.path.abspath(__file__))
-bot = None
-updater = None
-dispatcher = None
+
 webhook_url_path = "%s-%i" % (bot_token, bot_instance)
 webhook_port = int(os.environ['NOLIFER_WEBHOOK_PORT']) \
-                                if "NOLIFER_WEBHOOK_PORT" in os.environ \
-                                else 24627
+    if "NOLIFER_WEBHOOK_PORT" in os.environ \
+    else 24627
 webhook_listen = os.environ['NOLIFER_WEBHOOK_LISTEN'] \
-                                    if "NOLIFER_WEBHOOK_LISTEN" in os.environ \
-                                    else '127.0.0.1'
-webhook_url = "https://%s/%s" % \
-                            (os.environ['NOLIFER_WEBHOOK_BASEURL'] \
-                                if "NOLIFER_WEBHOOK_BASEURL" in os.environ \
-                                else webhook_listen, webhook_url_path)
+    if "NOLIFER_WEBHOOK_LISTEN" in os.environ \
+    else '127.0.0.1'
+webhook_url = "https://%s/%s" % (os.environ['NOLIFER_WEBHOOK_BASEURL'] if "NOLIFER_WEBHOOK_BASEURL" in os.environ
+                                 else webhook_listen, webhook_url_path)
+
 
 def start_bot():
     print("Starting bot located at %s" % bot_dir)
@@ -66,20 +62,19 @@ def start_bot():
         print("Token approved, proceeding with initialization")
     except telegram.error.InvalidToken:
         print("Error: invalid token '%s'. "
-                    "Make sure your Telegram bot token is correct"
-                    % bot_token)
+              "Make sure your Telegram bot token is correct"
+              % bot_token)
         exit(1)
     print("This is %s" % bot.get_me()['first_name'])
     print("Initializing updater...")
-    update_queue = None
     try:
         updater = Updater(token=bot_token)
         print("  Listen: %s\n"
               "  Port:   %i\n"
               "  URL:    %s" % (webhook_listen, webhook_port, webhook_url))
-        update_queue = updater.start_webhook(listen=webhook_listen,
-                                             port=webhook_port,
-                                             url_path=webhook_url_path)
+        updater.start_webhook(listen=webhook_listen,
+                              port=webhook_port,
+                              url_path=webhook_url_path)
         updater.bot.set_webhook(url=webhook_url,
                                 certificate=open(
                                     "%s/../cruft/cert.pem" % bot_dir, "rb"))
@@ -90,11 +85,10 @@ def start_bot():
     print("Updater successfully set up.")
     print("Checking for recent restart...")
     try:
-        tmpfile = open("/tmp/nolifer-stop-reason", "r")
-        filecont = tmpfile.readline().strip().split()
+        with open("/tmp/nolifer-stop-reason", "r") as tmpfile:
+            filecont = tmpfile.readline().strip().split()
         reason = filecont[0]
         chat_id = filecont[1]
-        tmpfile.close()
         if reason == "restart":
             bot.sendMessage(chat_id=chat_id,
                             text="Restart successful.")
@@ -111,6 +105,7 @@ def start_bot():
     print("Listening.")
     updater.idle()
     print("Stopped")
+
 
 if __name__ == "__main__":
     if argv_len > 0 and sys.argv[1] == "sanity-check":

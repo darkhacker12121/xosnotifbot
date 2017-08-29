@@ -23,39 +23,36 @@ import re
 from telegram.ext import BaseFilter
 
 # Project imports
-from utils import getenviron
+from bot.utils import getenviron
 
 _latest_build_file = getenviron(
     "NOLIFER_LATEST_BUILD_FILE",
     "/var/lib/jenkins/workspace/halogenOS/%s-latest.txt")
 
+
 class HashMessageFilter(BaseFilter):
     def filter(self, message):
-        return message.text != None and \
-                len(message.text) >= 2 and message.text[0] == '#'
+        return message.text is not None and len(message.text) >= 2 and message.text[0] == '#'
+
 
 def on_hash_message(bot, update):
     msg_split = update.message.text.split()
     hashtag_item = msg_split[0][1:]
-    if update.message.chat_id == -1001068076699 or \
-         update.message.chat_id == 11814515:
+    if update.message.chat_id == -1001068076699 or update.message.chat_id == 11814515:
         if hashtag_item == "latest":
             try:
                 if len(msg_split) > 1 and \
-                        re.match('^[\w-]+$', msg_split[1]) is None:
+                                re.match('^[\w-]+$', msg_split[1]) is None:
                     update.message.reply_text("Nice try ;)")
                 else:
-                    file = open(
-                        _latest_build_file \
-                            % (msg_split[1] \
-                                if len(msg_split) > 1 else "oneplus2"), "r")
-                    update.message.reply_text(file.read())
-                    file.close()
+                    with open(_latest_build_file % (msg_split[1] if len(msg_split) > 1 else "oneplus2"), "r") as f:
+                        update.message.reply_text(f.read())
             except Exception as e:
                 print("Error while getting latest: %s" % e)
         elif hashtag_item == "modem":
             update.message.reply_text(
                 "https://www.androidfilehost.com/?fid=889764386195914770")
+
 
 hash_message_filter = HashMessageFilter()
 

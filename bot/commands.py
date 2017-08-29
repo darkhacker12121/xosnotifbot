@@ -18,24 +18,23 @@
 
 # Python imports
 import os
-import sys
 import requests
 import signal
 import re
 from subprocess import call
 from os.path import expanduser
 
-# Library imports
-import telegram
-
 # Project imports
-from utils import getenviron
+from bot.utils import getenviron
+
 
 def get_id(bot, update):
     update.message.reply_text("ID: %s" % update.message.chat_id)
 
+
 def runs(bot, update):
     update.message.reply_text("Where u going so fast?!")
+
 
 _jenkins_address = getenviron("NOLIFER_JENKINS_ADDR", "localhost")
 _jenkins_port = int(getenviron("NOLIFER_JENKINS_PORT", "6692"))
@@ -49,24 +48,26 @@ _github_auth_token = getenviron("NOLIFER_GITHUB_TOKEN", "")
 _ssh_known_hosts_file = getenviron("NOLIFER_KNOWN_HOSTS_FILE",
                                    "%s/.ssh/known_hosts" % expanduser("~"))
 _chat_id_directory = getenviron("NOLIFER_CHAT_ID_DIR", "")
+
+
 def launch_build(bot, update):
     # Family group or my private chat
     if update.message.chat_id == -1001068076699 or \
-       update.message.chat_id == 11814515:
+                    update.message.chat_id == 11814515:
         msg_no_split = update.message.text[len("/build "):]
         if "'" in msg_no_split or '"' in msg_no_split or ";" in msg_no_split \
-                               or "&" in msg_no_split:
+                or "&" in msg_no_split:
             update.message.reply_text("Don't even try")
             return
         split_msg = msg_no_split.split()
         final_command = "ssh -l %s -i %s -o UserKnownHostsFile=%s %s -p %i build %s" \
-                    % (
-                         _jenkins_user,
-                         _jenkins_ssh_key,
-                         _ssh_known_hosts_file,
-                         _jenkins_address,
-                         _jenkins_port,
-                         _jenkins_project
+                        % (
+                            _jenkins_user,
+                            _jenkins_ssh_key,
+                            _ssh_known_hosts_file,
+                            _jenkins_address,
+                            _jenkins_port,
+                            _jenkins_project
                         )
         human_friendly_description = ""
         if split_msg:
@@ -84,18 +85,18 @@ def launch_build(bot, update):
             has_found_device = False
             while not has_found_device and r.json():
                 if "message" in r.json() and \
-                    "API rate limit exceeded" in r.json()["message"]:
-                        update.message.reply_text(
-                            "API rate limit exceeded for my IP, can't check "
-                            "whether the device tree exists"
-                        )
-                        return
+                                "API rate limit exceeded" in r.json()["message"]:
+                    update.message.reply_text(
+                        "API rate limit exceeded for my IP, can't check "
+                        "whether the device tree exists"
+                    )
+                    return
                 for entry in r.json():
                     if "name" in entry:
                         print(entry["name"])
-                        if entry["name"] != None and \
-                                "android_device_" in entry["name"] and \
-                                target_device in entry["name"]:
+                        if entry["name"] is not None \
+                                and "android_device_" in entry["name"] \
+                                and target_device in entry["name"]:
                             print("Found %s" % entry["name"])
                             has_found_device = True
                             break
@@ -147,7 +148,7 @@ def launch_build(bot, update):
                         break
 
                 final_command += " -p '%s=%s'" % \
-                                    (_jenkins_rom_ver_param, rom_version)
+                                 (_jenkins_rom_ver_param, rom_version)
                 human_friendly_description += "ROM Version: %s\n" % rom_version
 
                 if build_type in split_msg:
@@ -172,7 +173,7 @@ def launch_build(bot, update):
                             else:
                                 repopick_list += \
                                     "[[NEWLINE]]-t %s[[NEWLINE]]" \
-                                        % split_msg[j + 1]
+                                    % split_msg[j + 1]
                                 if j + 1 == len(split_msg) - 1:
                                     repopick_list = \
                                         repopick_list[:-(len("[[NEWLINE]]"))]
@@ -191,36 +192,34 @@ def launch_build(bot, update):
 
                 if had_repopick:
                     final_command += " -p 'repopick_before_build=%s'" \
-                                        % repopick_list
+                                     % repopick_list
                     human_friendly_description += "Stuff to repopick:\n%s\n" \
-                                                        % repopick_list
+                                                  % repopick_list
                 if module_to_build:
                     final_command += " -p 'Module_to_build=%s'" % \
-                                        module_to_build
+                                     module_to_build
                     human_friendly_description += "Module: %s\n" % \
-                                                    module_to_build
+                                                  module_to_build
         else:
             update.message.reply_text(
                 "Please specify a device like: /build oneplus2")
             return
         result_ = call(final_command.split())
         if not result_:
-            update.message.reply_text("%s build launched\n\n%s" \
-                                        % ("Release" if is_release else "Test",
-                                            human_friendly_description.replace(
-                                                "[[NEWLINE]]", "\n")))
+            update.message.reply_text("%s build launched\n\n%s"
+                                      % ("Release" if is_release else "Test",
+                                         human_friendly_description.replace(
+                                             "[[NEWLINE]]", "\n")))
         else:
             update.message.reply_text("Cannot launch build, error code %i",
-                                        result_)
+                                      result_)
+
 
 def restart_bot(bot, update):
-    if update.message.chat_id == -1001068076699 or \
-       update.message.chat_id == 11814515:
+    if update.message.chat_id == -1001068076699 or update.message.chat_id == 11814515:
         update.message.reply_text("Restarting...")
-        tmpfile = open("/tmp/nolifer-stop-reason", "w")
-        tmpfile.write("restart %s" % update.message.chat_id)
-        tmpfile.flush()
-        tmpfile.close()
+        with open("/tmp/nolifer-stop-reason", "w") as tmpfile:
+            tmpfile.write("restart %s" % update.message.chat_id)
         # Send SIGTERM to terminate normally
         os.kill(os.getpid(), signal.SIGTERM)
     else:
@@ -246,6 +245,7 @@ def associate_device(bot, update):
         idf.write("%s" % update.message.chat_id)
     update.message.reply_text("Device %s successfully associated with "
                               "this chat" % device)
+
 
 commands = [
     ["id", get_id],
