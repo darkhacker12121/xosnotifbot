@@ -55,15 +55,17 @@ _chat_id_directory = getenviron("NOLIFER_CHAT_ID_DIR", "")
 
 def launch_build(bot, update):
     # Family group or my private chat
-    if update.message.chat_id == -1001068076699 or \
-                    update.message.chat_id == 11814515:
+    valid_groups = [-1001068076699, 11814515]
+    if update.message.chat_id in valid_groups:
         msg_no_split = update.message.text[len("/build "):]
+
         if "'" in msg_no_split \
                 or '"' in msg_no_split \
                 or ";" in msg_no_split \
                 or "&" in msg_no_split:
             update.message.reply_text("Don't even try")
             return
+
         split_msg = msg_no_split.split()
         final_command = "ssh -l {} -i {} -o " \
                         "UserKnownHostsFile={} {} -p {} build {}".format(
@@ -75,147 +77,159 @@ def launch_build(bot, update):
                             _jenkins_project
                         )
         human_friendly_description = ""
-        if split_msg:
-            target_device = split_msg[0]
-            page = 1
-            api_url_tpl = 'https://api.github.com/orgs/halogenOS/repos?page=%s'
-            r = None
+
+        if not split_msg:
+            update.message.reply_text(
+                "Please specify a device like: /build oneplus2")
+            return
+
+        target_device = split_msg[0]
+        page = 1
+        api_url_tpl = 'https://api.github.com/orgs/halogenOS/repos?page=%s'
+
+        if _github_auth_token:
+            print("GitHub authorization token available.")
+            r = requests.get(api_url_tpl % page, headers={
+                'Authorization': 'token %s' % _github_auth_token
+            })
+        else:
+            r = requests.get(api_url_tpl % page)
+
+        has_found_device = False
+        data = r.json()
+        while data:
+            if "message" in data \
+                    and "API rate limit exceeded" in data.get("message"):
+                update.message.reply_text(
+                    "API rate limit exceeded for my IP, can't check "
+                    "whether the device tree exists"
+                )
+                return
+            for entry in data:
+                if "name" in entry:
+                    print(entry["name"])
+                    if entry["name"] \
+                            and "android_device_" in entry["name"] \
+                            and target_device in entry["name"]:
+                        print("Found %s" % entry["name"])
+                        has_found_device = True
+                        break
+
+            page += 1
             if _github_auth_token != "":
-                print("GitHub authorization token available.")
                 r = requests.get(api_url_tpl % page, headers={
                     'Authorization': 'token %s' % _github_auth_token
                 })
             else:
                 r = requests.get(api_url_tpl % page)
-            has_found_device = False
-            while not has_found_device and r.json():
-                if "message" in r.json() and \
-                            "API rate limit exceeded" in r.json()["message"]:
-                    update.message.reply_text(
-                        "API rate limit exceeded for my IP, can't check "
-                        "whether the device tree exists"
-                    )
-                    return
-                for entry in r.json():
-                    if "name" in entry:
-                        print(entry["name"])
-                        if entry["name"] is not None \
-                                and "android_device_" in entry["name"] \
-                                and target_device in entry["name"]:
-                            print("Found %s" % entry["name"])
-                            has_found_device = True
-                            break
-                page += 1
-                if _github_auth_token != "":
-                    r = requests.get(api_url_tpl % page, headers={
-                        'Authorization': 'token %s' % _github_auth_token
-                    })
-                else:
-                    r = requests.get(api_url_tpl % page)
-            if not has_found_device:
-                update.message.reply_text(
-                    "Device %s does not exist on our org" % target_device)
-                return
-            final_command += " -p 'Target_device=%s'" % target_device
-            human_friendly_description += "Device: %s\n" % target_device
-            is_release = False
-            if len(split_msg) >= 2:
-                split_msg.remove(target_device)
-                if "noclean" in split_msg:
-                    final_command += " -p 'do_clean=false'"
-                    split_msg.remove("noclean")
-                    human_friendly_description += "No clean\n"
-                if "noreset" in split_msg:
-                    final_command += " -p 'do_not_reset=true'"
-                    split_msg.remove("noreset")
-                    human_friendly_description += "No git reset\n"
-                if "release" in split_msg:
-                    final_command += \
-                        " -p " \
-                        "'Prepare_for_official_release=true' -p " \
-                        "'Do_release=true' -p " \
-                        "'Auto_release=true'"
-                    split_msg.remove("release")
-                    is_release = True
+            data = r.json()
 
-                build_type = "userdebug"
-                if "user" in split_msg:
-                    build_type = "user"
-                elif "eng" in split_msg:
-                    build_type = "eng"
-
-                rom_version = _rom_versions[0]
-
-                for ver in _rom_versions:
-                    if ver in split_msg:
-                        rom_version = ver
-                        split_msg.remove(ver)
-                        break
-
-                final_command += " -p '%s=%s'" % \
-                                 (_jenkins_rom_ver_param, rom_version)
-                human_friendly_description += "ROM Version: %s\n" % \
-                                              rom_version
-
-                if build_type in split_msg:
-                    split_msg.remove(build_type)
-                human_friendly_description += "Build type: %s\n" % build_type
-
-                final_command += " -p 'Build_type=%s'" % build_type
-
-                repopick_list = ""
-                module_to_build = ""
-                had_repopick = False
-                for arg in split_msg:
-                    if had_repopick: break
-                    if "repopick" in arg:
-                        start_repopick_ix = split_msg.index(arg)
-                        j = start_repopick_ix + 1
-                        while j < len(split_msg):
-                            if split_msg[j] != "-t":
-                                repopick_list += "%s," % split_msg[j]
-                                if j == len(split_msg) - 1:
-                                    repopick_list = repopick_list[:-1]
-                            else:
-                                repopick_list += \
-                                    "[[NEWLINE]]-t %s[[NEWLINE]]" \
-                                    % split_msg[j + 1]
-                                if j + 1 == len(split_msg) - 1:
-                                    repopick_list = \
-                                        repopick_list[:-(len("[[NEWLINE]]"))]
-                                j += 1
-                            j += 1
-                        had_repopick = True
-                        repopick_list.replace(
-                            "[[NEWLINE]][[NEWLINE]]", "[[NEWLINE]]")
-                    elif not module_to_build:
-                        module_to_build = arg
-                    else:
-                        update.message.reply_text(
-                            "Could not understand your request. "
-                            "Unrecognized argument %s" % arg)
-                        return
-
-                if had_repopick:
-                    final_command += " -p 'repopick_before_build=%s'" \
-                                     % repopick_list
-                    human_friendly_description += "Stuff to repopick:\n%s\n" \
-                                                  % repopick_list
-                if module_to_build:
-                    final_command += " -p 'Module_to_build=%s'" % \
-                                     module_to_build
-                    human_friendly_description += "Module: %s\n" % \
-                                                  module_to_build
-        else:
+        if not has_found_device:
             update.message.reply_text(
-                "Please specify a device like: /build oneplus2")
+                "Device %s does not exist on our org" % target_device)
             return
+
+        final_command += " -p 'Target_device=%s'" % target_device
+        human_friendly_description += "Device: %s\n" % target_device
+        is_release = False
+
+        if len(split_msg) >= 2:
+            split_msg.remove(target_device)
+            if "noclean" in split_msg:
+                final_command += " -p 'do_clean=false'"
+                split_msg.remove("noclean")
+                human_friendly_description += "No clean\n"
+            if "noreset" in split_msg:
+                final_command += " -p 'do_not_reset=true'"
+                split_msg.remove("noreset")
+                human_friendly_description += "No git reset\n"
+            if "release" in split_msg:
+                final_command += \
+                    " -p " \
+                    "'Prepare_for_official_release=true' -p " \
+                    "'Do_release=true' -p " \
+                    "'Auto_release=true'"
+                split_msg.remove("release")
+                is_release = True
+
+            build_type = "userdebug"
+            if "user" in split_msg:
+                build_type = "user"
+            elif "eng" in split_msg:
+                build_type = "eng"
+
+            rom_version = _rom_versions[0]
+
+            for ver in _rom_versions:
+                if ver in split_msg:
+                    rom_version = ver
+                    split_msg.remove(ver)
+                    break
+
+            final_command += " -p '%s=%s'" % \
+                             (_jenkins_rom_ver_param, rom_version)
+            human_friendly_description += "ROM Version: %s\n" % \
+                                          rom_version
+
+            if build_type in split_msg:
+                split_msg.remove(build_type)
+
+            human_friendly_description += "Build type: %s\n" % build_type
+
+            final_command += " -p 'Build_type=%s'" % build_type
+
+            repopick_list = ""
+            module_to_build = ""
+            had_repopick = False
+
+            for arg in split_msg:
+                if had_repopick:
+                    break
+                if "repopick" in arg:
+                    start_repopick_ix = split_msg.index(arg)
+                    j = start_repopick_ix + 1
+                    while j < len(split_msg):
+                        if split_msg[j] != "-t":
+                            repopick_list += "%s," % split_msg[j]
+                            if j == len(split_msg) - 1:
+                                repopick_list = repopick_list[:-1]
+                        else:
+                            repopick_list += \
+                                "[[NEWLINE]]-t %s[[NEWLINE]]" \
+                                % split_msg[j + 1]
+                            if j + 1 == len(split_msg) - 1:
+                                repopick_list = \
+                                    repopick_list[:-(len("[[NEWLINE]]"))]
+                            j += 1
+                        j += 1
+                    had_repopick = True
+                    repopick_list.replace(
+                        "[[NEWLINE]][[NEWLINE]]", "[[NEWLINE]]")
+                elif not module_to_build:
+                    module_to_build = arg
+                else:
+                    update.message.reply_text(
+                        "Could not understand your request. "
+                        "Unrecognized argument %s" % arg)
+                    return
+
+            if had_repopick:
+                final_command += " -p 'repopick_before_build=%s'" \
+                                 % repopick_list
+                human_friendly_description += "Stuff to repopick:\n%s\n" \
+                                              % repopick_list
+            if module_to_build:
+                final_command += " -p 'Module_to_build=%s'" % \
+                                 module_to_build
+                human_friendly_description += "Module: %s\n" % \
+                                              module_to_build
+
         result_ = call(final_command.split())
         if not result_:
-            update.message.reply_text("%s build launched\n\n%s"
-                                      % ("Release" if is_release else "Test",
-                                         human_friendly_description.replace(
-                                             "[[NEWLINE]]", "\n")))
+            update.message.reply_text("%s build launched\n\n%s" %
+                                      ("Release" if is_release else "Test",
+                                       human_friendly_description.replace(
+                                           "[[NEWLINE]]", "\n")))
         else:
             update.message.reply_text("Cannot launch build, error code %i",
                                       result_)
