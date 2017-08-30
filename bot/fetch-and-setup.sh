@@ -60,9 +60,6 @@ else
     rm -f telegram
     rm -f *.pyc
     pip3 install python-telegram-bot --target pip_modules --upgrade
-    pip3 install aiohttp --target pip_modules --upgrade
-    pip3 install cchardet --target pip_modules --upgrade
-    pip3 install aiodns --target pip_modules --upgrade
     ln -s pip_modules/telegram telegram
     cd ..
   fi
