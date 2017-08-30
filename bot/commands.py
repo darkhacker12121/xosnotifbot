@@ -18,11 +18,14 @@
 
 # Python imports
 import os
-import requests
 import signal
 import re
 from subprocess import call
 from os.path import expanduser
+from subprocess import call
+
+# external lib imports
+import requests
 
 # Project imports
 from bot.utils import getenviron
@@ -55,13 +58,15 @@ def launch_build(bot, update):
     if update.message.chat_id == -1001068076699 or \
                     update.message.chat_id == 11814515:
         msg_no_split = update.message.text[len("/build "):]
-        if "'" in msg_no_split or '"' in msg_no_split or ";" in msg_no_split \
+        if "'" in msg_no_split \
+                or '"' in msg_no_split \
+                or ";" in msg_no_split \
                 or "&" in msg_no_split:
             update.message.reply_text("Don't even try")
             return
         split_msg = msg_no_split.split()
-        final_command = "ssh -l %s -i %s -o UserKnownHostsFile=%s %s -p %i build %s" \
-                        % (
+        final_command = "ssh -l {} -i {} -o " \
+                        "UserKnownHostsFile={} {} -p {} build {}".format(
                             _jenkins_user,
                             _jenkins_ssh_key,
                             _ssh_known_hosts_file,
@@ -85,7 +90,7 @@ def launch_build(bot, update):
             has_found_device = False
             while not has_found_device and r.json():
                 if "message" in r.json() and \
-                                "API rate limit exceeded" in r.json()["message"]:
+                            "API rate limit exceeded" in r.json()["message"]:
                     update.message.reply_text(
                         "API rate limit exceeded for my IP, can't check "
                         "whether the device tree exists"
@@ -149,7 +154,8 @@ def launch_build(bot, update):
 
                 final_command += " -p '%s=%s'" % \
                                  (_jenkins_rom_ver_param, rom_version)
-                human_friendly_description += "ROM Version: %s\n" % rom_version
+                human_friendly_description += "ROM Version: %s\n" % \
+                                              rom_version
 
                 if build_type in split_msg:
                     split_msg.remove(build_type)
@@ -216,14 +222,16 @@ def launch_build(bot, update):
 
 
 def restart_bot(bot, update):
-    if update.message.chat_id == -1001068076699 or update.message.chat_id == 11814515:
+    if update.message.chat_id == -1001068076699 \
+            or update.message.chat_id == 11814515:
         update.message.reply_text("Restarting...")
         with open("/tmp/nolifer-stop-reason", "w") as tmpfile:
             tmpfile.write("restart %s" % update.message.chat_id)
         # Send SIGTERM to terminate normally
         os.kill(os.getpid(), signal.SIGTERM)
     else:
-        update.message.reply_text("Sorry, you are not allowed to do that here")
+        update.message.reply_text("Sorry, you are not "
+                                  "allowed to do that here")
 
 def associate_device(bot, update):
     if update.message.from_user.id != 11814515:

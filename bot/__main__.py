@@ -17,6 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import logging
 # Python imports
 import os
 import sys
@@ -24,7 +25,6 @@ import sys
 # Library imports
 import telegram
 from telegram.ext import Updater, CommandHandler, MessageHandler
-import logging
 
 # Project imports
 from bot import commands, custom_filters
@@ -47,7 +47,8 @@ webhook_port = int(os.environ['NOLIFER_WEBHOOK_PORT']) \
 webhook_listen = os.environ['NOLIFER_WEBHOOK_LISTEN'] \
     if "NOLIFER_WEBHOOK_LISTEN" in os.environ \
     else '127.0.0.1'
-webhook_url = "https://%s/%s" % (os.environ['NOLIFER_WEBHOOK_BASEURL'] if "NOLIFER_WEBHOOK_BASEURL" in os.environ
+webhook_url = "https://%s/%s" % (os.environ['NOLIFER_WEBHOOK_BASEURL']
+                                 if "NOLIFER_WEBHOOK_BASEURL" in os.environ
                                  else webhook_listen, webhook_url_path)
 
 

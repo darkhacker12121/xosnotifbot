@@ -32,20 +32,26 @@ _latest_build_file = getenviron(
 
 class HashMessageFilter(BaseFilter):
     def filter(self, message):
-        return message.text is not None and len(message.text) >= 2 and message.text[0] == '#'
+        return message.text is not None \
+               and len(message.text) >= 2 \
+               and message.text[0] == '#'
 
 
 def on_hash_message(bot, update):
     msg_split = update.message.text.split()
     hashtag_item = msg_split[0][1:]
-    if update.message.chat_id == -1001068076699 or update.message.chat_id == 11814515:
+    if update.message.chat_id == -1001068076699 \
+            or update.message.chat_id == 11814515:
         if hashtag_item == "latest":
             try:
                 if len(msg_split) > 1 and \
-                                re.match('^[\w-]+$', msg_split[1]) is None:
+                                re.match(r'^[\w-]+$', msg_split[1]) is None:
                     update.message.reply_text("Nice try ;)")
                 else:
-                    with open(_latest_build_file % (msg_split[1] if len(msg_split) > 1 else "oneplus2"), "r") as f:
+                    filename = _latest_build_file % \
+                               (msg_split[1] if len(msg_split) > 1
+                                else "oneplus2")
+                    with open(filename, "r") as f:
                         update.message.reply_text(f.read())
             except Exception as e:
                 print("Error while getting latest: %s" % e)
