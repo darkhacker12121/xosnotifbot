@@ -25,19 +25,6 @@ fallback_install() {
       --recursive
   echo "Preparing python telegram bot setup"
   cd python-telegram-bot
-  if [ "$(whoami)" != "root" ]; then
-    echo "  Root access is required to install necessary dependencies."
-    read -p "  Do you want to grant root permission? [y/N]: " -n 1 -r
-    [[ ! $REPLY =~ ^[Yy]$ ]] && echo -e "\nAborted." && exit 1
-    echo
-    echo "    Trying to gain root permission..."
-    if [ "$(sudo whoami)" == "root" ]; then
-      echo "    -> Success!"
-    else
-      echo "    -> Failed!"
-      exit 1
-    fi
-  fi
   echo "Installing"
   sudo python setup.py install
   cd ..
@@ -47,6 +34,19 @@ fallback_install() {
 }
 
 echo
+if [ "$(whoami)" != "root" ]; then
+  echo "  Root access is required to install necessary dependencies."
+  read -p "  Do you want to grant root permission? [y/N]: " -n 1 -r
+  [[ ! $REPLY =~ ^[Yy]$ ]] && echo -e "\nAborted." && exit 1
+  echo
+  echo "    Trying to gain root permission..."
+  if [ "$(sudo whoami)" == "root" ]; then
+    echo "    -> Success!"
+  else
+    echo "    -> Failed!"
+    exit 1
+  fi
+fi
 which pip3 2>/dev/null >/dev/null
 if [ $? -ne 0 ]; then
   echo "pip3 not installed, falling back to github fetch."
@@ -59,8 +59,7 @@ else
     rm -rf python-telegram-bot
     rm -f telegram
     rm -f *.pyc
-    pip3 install python-telegram-bot --target pip_modules --upgrade
-    ln -s pip_modules/telegram telegram
+    sudo pip3 install python-telegram-bot --upgrade
     cd ..
   fi
 fi
