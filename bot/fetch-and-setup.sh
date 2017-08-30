@@ -74,7 +74,6 @@ else
   echo "  SSL certificate is valid for 10 years from now."
   cd ..
 fi
-cd bot
 echo "Doing sanity check"
 result_ns="$(python3 -m bot sanity-check)"
 if [ $? -ne 0 ] || [ "$result_ns" != "success" ]; then
