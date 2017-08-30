@@ -75,14 +75,14 @@ else
 fi
 cd bot
 echo "Doing sanity check"
-result_ns="$(./nolifer.py sanity-check)"
+result_ns="$(python3 -m bot sanity-check)"
 if [ $? -ne 0 ] || [ "$result_ns" != "success" ]; then
   echo "  Sanity check failed, please make sure python is working properly"
   echo "  and that the script 'nolifer.py' is executable. Exiting now."
   exit 1
 fi
 echo "Done. In the bot directory start the bot using this command:"
-echo "  ./nolifer.py <telegram bot token>"
+echo "  python3 -m bot <telegram bot token>"
 echo
 echo "Set the environment variable NOLIFER_TG_TOKEN if you don't want to" \
      "pass it as environment variable"
