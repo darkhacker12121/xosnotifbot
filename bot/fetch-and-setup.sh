@@ -78,7 +78,8 @@ echo "Doing sanity check"
 result_ns="$(python3 -m bot sanity-check)"
 if [ $? -ne 0 ] || [ "$result_ns" != "success" ]; then
   echo "  Sanity check failed, please make sure python is working properly"
-  echo "  and that the script 'nolifer.py' is executable. Exiting now."
+  echo "  and that everything in bot/ is accessible. Also make sure all "
+  echo "  dependencies are properly installed. Exiting now."
   exit 1
 fi
 echo "Done. In the bot directory start the bot using this command:"
