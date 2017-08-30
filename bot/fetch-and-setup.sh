@@ -59,6 +59,7 @@ else
     rm -rf python-telegram-bot
     rm -f telegram
     rm -f *.pyc
+    rm -rf pip_modules
     sudo pip3 install python-telegram-bot --upgrade
     cd ..
   fi
