@@ -17,31 +17,56 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-echo
-echo "Cloning python telegram bot API repository"
-git clone https://github.com/python-telegram-bot/python-telegram-bot.git \
-    --recursive
-echo "Preparing python telegram bot setup"
-cd python-telegram-bot
-if [ "$(whoami)" != "root" ]; then
-  echo "  Root access is required to install necessary dependencies."
-  read -p "  Do you want to grant root permission? [y/N]: " -n 1 -r
-  [[ ! $REPLY =~ ^[Yy]$ ]] && echo -e "\nAborted." && exit 1
+fallback_install() {
+  echo "You might need to install dependencies manually"
   echo
-  echo "    Trying to gain root permission..."
-  if [ "$(sudo whoami)" == "root" ]; then
-    echo "    -> Success!"
+  echo "Cloning python telegram bot API repository"
+  git clone https://github.com/python-telegram-bot/python-telegram-bot.git \
+      --recursive
+  echo "Preparing python telegram bot setup"
+  cd python-telegram-bot
+  if [ "$(whoami)" != "root" ]; then
+    echo "  Root access is required to install necessary dependencies."
+    read -p "  Do you want to grant root permission? [y/N]: " -n 1 -r
+    [[ ! $REPLY =~ ^[Yy]$ ]] && echo -e "\nAborted." && exit 1
+    echo
+    echo "    Trying to gain root permission..."
+    if [ "$(sudo whoami)" == "root" ]; then
+      echo "    -> Success!"
+    else
+      echo "    -> Failed!"
+      exit 1
+    fi
+  fi
+  echo "Installing"
+  sudo python setup.py install
+  cd ..
+  echo "Symlinking telegram module"
+  ln -sf python-telegram-bot/telegram telegram
+  cd ..
+}
+
+echo
+which pip3 2>/dev/null >/dev/null
+if [ $? -ne 0 ]; then
+  echo "pip3 not installed, falling back to github fetch."
+  fallback_install
+else
+  if [ 0$(pip3 --version | cut -d ' ' -f2 | cut -d '.' -f1) -lt 9 ]; then
+    echo "pip3 version not 9+, falling back to github fetch."
+    fallback_install
   else
-    echo "    -> Failed!"
-    exit 1
+    rm -rf python-telegram-bot
+    rm -f telegram
+    rm -f *.pyc
+    pip3 install python-telegram-bot --target pip_modules --upgrade
+    pip3 install aiohttp --target pip_modules --upgrade
+    pip3 install cchardet --target pip_modules --upgrade
+    pip3 install aiodns --target pip_modules --upgrade
+    ln -s pip_modules/telegram telegram
+    cd ..
   fi
 fi
-echo "Installing"
-sudo python setup.py install
-cd ..
-echo "Symlinking telegram module"
-ln -sf python-telegram-bot/telegram telegram
-cd ..
 if [ -f "cruft/cert.pem" ] && [ -f "cruft/private.key" ]; then
   echo "SSL certificate already exists, not generating a new one."
 else

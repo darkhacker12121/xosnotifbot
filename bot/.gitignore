@@ -2,3 +2,4 @@ python-telegram-bot
 telegram
 *.pyc
 *.tmp
+pip_modules
