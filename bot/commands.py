@@ -234,7 +234,11 @@ def associate_device(bot, update):
         update.message.reply_text("Directory for Chat IDs not defined!")
         print("Please define the chat id dir as env var NOLIFER_CHAT_ID_DIR")
         return
-    device = update.message.text[len("/assocdevice "):].split()[0].strip()
+    split_msg = update.message.text[len("/assocdevice "):].split()
+    if len(split_msg) == 0:
+        update.message.reply_text("Specify a device")
+        return
+    device = split_msg[0].strip()
     if not re.match('^[\w-]+$', device):
         update.message.reply_text("I'm pretty sure %s isn't a device" % device)
         return
