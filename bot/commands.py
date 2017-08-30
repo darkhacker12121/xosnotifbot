@@ -227,6 +227,9 @@ def restart_bot(bot, update):
         update.message.reply_text("Sorry, you are not allowed to do that here")
 
 def associate_device(bot, update):
+    if update.message.from_user.id != 11814515:
+        update.message.reply_text("You are not allowed to do this.")
+        return
     if _chat_id_directory == "":
         update.message.reply_text("Directory for Chat IDs not defined!")
         print("Please define the chat id dir as env var NOLIFER_CHAT_ID_DIR")
