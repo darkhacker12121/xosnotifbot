@@ -21,6 +21,7 @@ import os
 import sys
 import requests
 import signal
+import re
 from subprocess import call
 from os.path import expanduser
 
@@ -47,6 +48,7 @@ _rom_versions = getenviron("NOLIFER_ROM_VERSIONS", "8.0,7.1").split(",")
 _github_auth_token = getenviron("NOLIFER_GITHUB_TOKEN", "")
 _ssh_known_hosts_file = getenviron("NOLIFER_KNOWN_HOSTS_FILE",
                                    "%s/.ssh/known_hosts" % expanduser("~"))
+_chat_id_directory = getenviron("NOLIFER_CHAT_ID_DIR", "")
 def launch_build(bot, update):
     # Family group or my private chat
     if update.message.chat_id == -1001068076699 or \
@@ -224,9 +226,24 @@ def restart_bot(bot, update):
     else:
         update.message.reply_text("Sorry, you are not allowed to do that here")
 
+def associate_device(bot, update):
+    if _chat_id_directory == "":
+        update.message.reply_text("Directory for Chat IDs not defined!")
+        print("Please define the chat id dir as env var NOLIFER_CHAT_ID_DIR")
+        return
+    device = update.message.text[len("/assocdevice "):].split()[0].strip()
+    if not re.match('^[\w-]+$', device):
+        update.message.reply_text("I'm pretty sure %s isn't a device" % device)
+        return
+    with open("%s/%s-chat_id.txt" % (_chat_id_directory, device), "w") as idf:
+        idf.write("%s" % update.message.chat_id)
+    update.message.reply_text("Device %s successfully associated with "
+                              "this chat" % device)
+
 commands = [
     ["id", get_id],
     ["runs", runs],
     ["build", launch_build],
     ["restart", restart_bot],
+    ["assocdevice", associate_device],
 ]
