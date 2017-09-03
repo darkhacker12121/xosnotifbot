@@ -31,14 +31,6 @@ import requests
 from bot.utils import getenviron
 
 
-def get_id(bot, update):
-    update.message.reply_text("ID: %s" % update.message.chat_id)
-
-
-def runs(bot, update):
-    update.message.reply_text("Where u going so fast?!")
-
-
 _jenkins_address = getenviron("NOLIFER_JENKINS_ADDR", "localhost")
 _jenkins_port = int(getenviron("NOLIFER_JENKINS_PORT", "6692"))
 _jenkins_user = getenviron("NOLIFER_JENKINS_USER", "xdevs23")
@@ -261,6 +253,12 @@ def associate_device(bot, update):
     update.message.reply_text("Device %s successfully associated with "
                               "this chat" % device)
 
+def get_id(bot, update):
+    update.message.reply_text("ID: %s" % update.message.chat_id)
+
+
+def runs(bot, update):
+    update.message.reply_text("Where u going so fast?!")
 
 commands = [
     ["id", get_id],
