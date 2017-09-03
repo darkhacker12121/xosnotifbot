@@ -45,7 +45,7 @@ _jenkins_user = getenviron("NOLIFER_JENKINS_USER", "xdevs23")
 _jenkins_project = getenviron("NOLIFER_JENKINS_PROJECT", "halogenOS")
 _jenkins_ssh_key = getenviron("NOLIFER_JENKINS_SSHKEY",
                               "%s/.ssh/id_rsa" % expanduser("~"))
-_jenkins_rom_ver_param = getenviron("NOLIFER_ROM_VER_PARAM", "XOS_Version")
+_jenkins_rom_ver_param = getenviron("NOLIFER_ROM_VER_PARAM", "Rom_Version")
 _rom_versions = getenviron("NOLIFER_ROM_VERSIONS", "8.0,7.1").split(",")
 _github_auth_token = getenviron("NOLIFER_GITHUB_TOKEN", "")
 _ssh_known_hosts_file = getenviron("NOLIFER_KNOWN_HOSTS_FILE",
@@ -134,19 +134,15 @@ def launch_build(bot, update):
         if len(split_msg) >= 2:
             split_msg.remove(target_device)
             if "noclean" in split_msg:
-                final_command += " -p 'do_clean=false'"
+                final_command += " -p 'Do_clean=false'"
                 split_msg.remove("noclean")
                 human_friendly_description += "No clean\n"
             if "noreset" in split_msg:
-                final_command += " -p 'do_not_reset=true'"
+                final_command += " -p 'do_reset=false'"
                 split_msg.remove("noreset")
                 human_friendly_description += "No git reset\n"
             if "release" in split_msg:
-                final_command += \
-                    " -p " \
-                    "'Prepare_for_official_release=true' -p " \
-                    "'Do_release=true' -p " \
-                    "'Auto_release=true'"
+                final_command += " -p 'Do_release=true'"
                 split_msg.remove("release")
                 is_release = True
 
