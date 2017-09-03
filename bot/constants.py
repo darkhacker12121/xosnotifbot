@@ -18,4 +18,4 @@
 
 # Constant global variables
 
-high_permission_chats = [-1001068076699, 11814515]
+high_privilege_chats = [-1001068076699, 11814515]

@@ -45,7 +45,7 @@ _chat_id_directory = getenviron("NOLIFER_CHAT_ID_DIR", "")
 
 def launch_build(bot, update):
     # Family group or my private chat
-    if update.message.chat_id in constants.high_permission_chats:
+    if update.message.chat_id in constants.high_privilege_chats:
         msg_no_split = update.message.text[len("/build "):]
 
         if "'" in msg_no_split \
@@ -218,7 +218,7 @@ def launch_build(bot, update):
                                       result_)
 
 def restart_bot(bot, update):
-    if update.message.chat_id in constants.high_permission_checks:
+    if update.message.chat_id in constants.high_privilege_chats:
         update.message.reply_text("Restarting...")
         with open("/tmp/nolifer-stop-reason", "w") as tmpfile:
             tmpfile.write("restart %s" % update.message.chat_id)
