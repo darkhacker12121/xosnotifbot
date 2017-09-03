@@ -50,7 +50,6 @@ webhook_url = "https://%s/%s" % (os.environ['NOLIFER_WEBHOOK_BASEURL']
                                  if "NOLIFER_WEBHOOK_BASEURL" in os.environ
                                  else webhook_listen, webhook_url_path)
 
-
 def start_bot():
     print("Starting bot located at %s" % bot_dir)
     logging.basicConfig(
@@ -105,7 +104,6 @@ def start_bot():
     print("Listening.")
     updater.idle()
     print("Stopped")
-
 
 if __name__ == "__main__":
     if argv_len > 0 and sys.argv[1] == "sanity-check":
