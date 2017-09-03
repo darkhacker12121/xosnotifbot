@@ -52,11 +52,11 @@ _ssh_known_hosts_file = getenviron("NOLIFER_KNOWN_HOSTS_FILE",
                                    "%s/.ssh/known_hosts" % expanduser("~"))
 _chat_id_directory = getenviron("NOLIFER_CHAT_ID_DIR", "")
 
+_high_permission_chats = [-1001068076699, 11814515]
 
 def launch_build(bot, update):
     # Family group or my private chat
-    valid_groups = [-1001068076699, 11814515]
-    if update.message.chat_id in valid_groups:
+    if update.message.chat_id in _high_permission_chats:
         msg_no_split = update.message.text[len("/build "):]
 
         if "'" in msg_no_split \
@@ -230,8 +230,7 @@ def launch_build(bot, update):
 
 
 def restart_bot(bot, update):
-    if update.message.chat_id == -1001068076699 \
-            or update.message.chat_id == 11814515:
+    if update.message.chat_id in _high_permission_checks:
         update.message.reply_text("Restarting...")
         with open("/tmp/nolifer-stop-reason", "w") as tmpfile:
             tmpfile.write("restart %s" % update.message.chat_id)
