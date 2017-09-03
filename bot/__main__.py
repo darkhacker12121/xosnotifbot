@@ -36,7 +36,6 @@ if argv_len < 1 and "NOLIFER_TG_TOKEN" not in os.environ:
     exit(1)
 
 bot_token = os.environ['NOLIFER_TG_TOKEN'] if argv_len < 1 else sys.argv[1]
-# TODO: implement this dynamically
 bot_instance = 1
 bot_dir = os.path.dirname(os.path.abspath(__file__))
 
