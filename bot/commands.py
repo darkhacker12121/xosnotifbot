@@ -30,7 +30,6 @@ import requests
 # Project imports
 from bot.utils import getenviron
 
-
 _jenkins_address = getenviron("NOLIFER_JENKINS_ADDR", "localhost")
 _jenkins_port = int(getenviron("NOLIFER_JENKINS_PORT", "6692"))
 _jenkins_user = getenviron("NOLIFER_JENKINS_USER", "xdevs23")
@@ -219,7 +218,6 @@ def launch_build(bot, update):
         else:
             update.message.reply_text("Cannot launch build, error code %i",
                                       result_)
-
 
 def restart_bot(bot, update):
     if update.message.chat_id in _high_permission_checks:
