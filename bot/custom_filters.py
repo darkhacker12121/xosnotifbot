@@ -24,6 +24,7 @@ from telegram.ext import BaseFilter
 
 # Project imports
 from bot.utils import getenviron
+from bot import constants
 
 _latest_build_file = getenviron(
     "NOLIFER_LATEST_BUILD_FILE",
@@ -38,8 +39,7 @@ class HashMessageFilter(BaseFilter):
 def on_hash_message(bot, update):
     msg_split = update.message.text.split()
     hashtag_item = msg_split[0][1:]
-    if update.message.chat_id == -1001068076699 \
-            or update.message.chat_id == 11814515:
+    if update.message.chat_id in high_permission_chats:
         if hashtag_item == "latest":
             try:
                 if len(msg_split) > 1 and \
