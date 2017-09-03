@@ -57,7 +57,7 @@ def launch_build(bot, update):
             return
 
         split_msg = msg_no_split.split()
-        final_command = "ssh -l %s -i %s -o UserKnownHostsFile=%s %s -p %i "
+        final_command = "ssh -l %s -i %s -o UserKnownHostsFile=%s %s -p %i " \
                         "build %s" \
                       % (
                          _jenkins_user,
