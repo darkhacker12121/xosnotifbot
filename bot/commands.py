@@ -22,7 +22,6 @@ import signal
 import re
 from subprocess import call
 from os.path import expanduser
-from subprocess import call
 
 # external lib imports
 import requests
