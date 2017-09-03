@@ -29,13 +29,11 @@ _latest_build_file = getenviron(
     "NOLIFER_LATEST_BUILD_FILE",
     "/var/lib/jenkins/workspace/halogenOS/%s-latest.txt")
 
-
 class HashMessageFilter(BaseFilter):
     def filter(self, message):
         return message.text is not None \
                and len(message.text) >= 2 \
                and message.text[0] == '#'
-
 
 def on_hash_message(bot, update):
     msg_split = update.message.text.split()
@@ -58,7 +56,6 @@ def on_hash_message(bot, update):
         elif hashtag_item == "modem":
             update.message.reply_text(
                 "https://www.androidfilehost.com/?fid=889764386195914770")
-
 
 hash_message_filter = HashMessageFilter()
 
