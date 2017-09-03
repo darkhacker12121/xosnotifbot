@@ -67,14 +67,15 @@ def launch_build(bot, update):
             return
 
         split_msg = msg_no_split.split()
-        final_command = "ssh -l {} -i {} -o " \
-                        "UserKnownHostsFile={} {} -p {} build {}".format(
-                            _jenkins_user,
-                            _jenkins_ssh_key,
-                            _ssh_known_hosts_file,
-                            _jenkins_address,
-                            _jenkins_port,
-                            _jenkins_project
+        final_command = "ssh -l %s -i %s -o UserKnownHostsFile=%s %s -p %i "
+                        "build %s" \
+                      % (
+                         _jenkins_user,
+                         _jenkins_ssh_key,
+                         _ssh_known_hosts_file,
+                         _jenkins_address,
+                         _jenkins_port,
+                         _jenkins_project
                         )
         human_friendly_description = ""
 
@@ -96,25 +97,23 @@ def launch_build(bot, update):
             r = requests.get(api_url_tpl % page)
 
         has_found_device = False
-        data = r.json()
-        while data:
-            if "message" in data \
-                    and "API rate limit exceeded" in data.get("message"):
-                update.message.reply_text(
-                    "API rate limit exceeded for my IP, can't check "
-                    "whether the device tree exists"
-                )
-                return
-            for entry in data:
+        while not has_found_device and r.json():
+            if "message" in r.json() and \
+                "API rate limit exceeded" in r.json()["message"]:
+                    update.message.reply_text(
+                        "API rate limit exceeded for my IP, can't check "
+                        "whether the device tree exists"
+                    )
+                    return
+            for entry in r.json():
                 if "name" in entry:
                     print(entry["name"])
-                    if entry["name"] \
-                            and "android_device_" in entry["name"] \
-                            and target_device in entry["name"]:
+                    if entry["name"] != None and \
+                            "android_device_" in entry["name"] and \
+                            target_device in entry["name"]:
                         print("Found %s" % entry["name"])
                         has_found_device = True
                         break
-
             page += 1
             if _github_auth_token != "":
                 r = requests.get(api_url_tpl % page, headers={
@@ -122,7 +121,6 @@ def launch_build(bot, update):
                 })
             else:
                 r = requests.get(api_url_tpl % page)
-            data = r.json()
 
         if not has_found_device:
             update.message.reply_text(
