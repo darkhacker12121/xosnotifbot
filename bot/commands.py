@@ -256,10 +256,14 @@ def get_id(bot, update):
 def runs(bot, update):
     update.message.reply_text("Where u going so fast?!")
 
+def die_(bot, update):
+    update.message.reply_text("Done")
+
 commands = [
     ["id", get_id],
     ["runs", runs],
     ["build", launch_build],
     ["restart", restart_bot],
     ["assocdevice", associate_device],
+    ["die", die_],
 ]
