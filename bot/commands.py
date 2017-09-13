@@ -36,7 +36,7 @@ _jenkins_user = getenviron("NOLIFER_JENKINS_USER", "xdevs23")
 _jenkins_project = getenviron("NOLIFER_JENKINS_PROJECT", "halogenOS")
 _jenkins_ssh_key = getenviron("NOLIFER_JENKINS_SSHKEY",
                               "%s/.ssh/id_rsa" % expanduser("~"))
-_jenkins_rom_ver_param = getenviron("NOLIFER_ROM_VER_PARAM", "Rom_Version")
+_jenkins_rom_ver_param = getenviron("NOLIFER_ROM_VER_PARAM", "Rom_version")
 _rom_versions = getenviron("NOLIFER_ROM_VERSIONS", "8.0,7.1").split(",")
 _github_auth_token = getenviron("NOLIFER_GITHUB_TOKEN", "")
 _ssh_known_hosts_file = getenviron("NOLIFER_KNOWN_HOSTS_FILE",
