@@ -130,6 +130,10 @@ def launch_build(bot, update):
                 final_command += " -p 'do_reset=false'"
                 split_msg.remove("noreset")
                 human_friendly_description += "No git reset\n"
+            if "nosync" in split_msg:
+                final_command += " -p 'do_sync=false'"
+                split_msg.remove("nosync")
+                human_friendly_description += "No sync\n"
             if "release" in split_msg:
                 final_command += " -p 'Do_release=true'"
                 split_msg.remove("release")
