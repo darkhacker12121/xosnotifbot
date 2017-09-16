@@ -69,10 +69,11 @@ def launch_build(bot, update):
                         )
         human_friendly_description = ""
 
+        update.message.reply_text(
+            "Hold up, I'm checking what I can do for you...")
+
         schedule_command = ""
         if "schedule" in split_msg:
-            update.message.reply_text(
-                "Hold up, I'm checking what I can do for you...")
             try:
                 schedule_for=split_msg[split_msg.index("schedule") + 1]
                 split_msg.remove("schedule")
