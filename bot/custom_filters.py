@@ -49,6 +49,9 @@ def on_hash_message(bot, update):
                     filename = _latest_build_file % \
                                (msg_split[1] if len(msg_split) > 1
                                 else "oneplus2")
+                    if not os.path.isfile(filename):
+                        update.message.reply_text("No latest for %s" % msg_split[1])
+                        return
                     with open(filename, "r") as f:
                         update.message.reply_text(f.read())
             except Exception as e:
