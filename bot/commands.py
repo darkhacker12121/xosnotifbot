@@ -20,6 +20,7 @@
 import os
 import signal
 import re
+import hashlib
 from subprocess import call
 from os.path import expanduser
 
@@ -67,6 +68,59 @@ def launch_build(bot, update):
                          _jenkins_project
                         )
         human_friendly_description = ""
+
+        schedule_command = ""
+        if "schedule" in split_msg:
+            update.message.reply_text(
+                "Hold up, I'm checking what I can do for you...")
+            try:
+                schedule_for=split_msg[split_msg.index("schedule") + 1]
+                split_msg.remove("schedule")
+                schedule_command += "at"
+                if schedule_for[0] == '+':
+                    if not schedule_for[1:].isdigit():
+                        raise Exception(
+                          "%s is not a number. For running it in x " \
+                          "hours, specify +x" % schedule_for[1:]
+                        )
+                    schedule_command += " now +%s hours" % schedule_for[1:]
+                elif "tomorrow" in schedule_for:
+                    tmrw_len = len("tomorrow")
+                    aftertmrw = schedule_for[tmrw_len + 1:]
+                    if not aftertmrw[:2].isdigit() or \
+                            not aftertmrw[3:5].isdigit():
+                        raise Exception("%s or %s is not a number" % \
+                                (aftertmrw[:2], aftertmrw[3:5]))
+                    schedule_command += " %s:%s tomorrow"% \
+                            (aftertmrw[:2], aftertmrw[3:5])
+                elif ":" in schedule_for and "." not in schedule_for:
+                    if not schedule_for[:2].isdigit() or \
+                            not schedule_for[3:5].isdigit():
+                        raise Exception(
+                          "%s or %s is not a number. If you want to " \
+                          "run it at a specific time, specify HH:MM" \
+                            % (schedule_for[:2], schedule_for[3:])
+                        )
+                    schedule_command += " %s:%s" % \
+                            (schedule_for[:2], schedule_for[3:])
+                elif ":" in schedule_for and "." in schedule_for:
+                    if not schedule_for[:2].isdigit() or \
+                            not schedule_for[3:5].isdigit() or \
+                            not schedule_for[6:10].isdigit() or \
+                            not schedule_for[11:13].isdigit() or \
+                            not schedule_for[14:16].isdigit():
+                        raise Exception("Specify it as HH:MM.YYYY-MM-DD")
+                    schedule_command += " %s %s" % \
+                            (schedule_for[:5], schedule_for[6:16])
+                else:
+                    update.message.reply_text("I don't know what you mean " \
+                                              "by %s" % schedule_for)
+                    return
+                split_msg.remove(schedule_for)
+            except Exception as e:
+                update.message.reply_text(
+                    "Oops... looks like something is wr0ng: %s" % e)
+                return
 
         if not split_msg:
             update.message.reply_text(
@@ -119,7 +173,7 @@ def launch_build(bot, update):
         final_command += " -p 'Target_device=%s'" % target_device
         human_friendly_description += "Device: %s\n" % target_device
         is_release = False
-
+        
         if len(split_msg) >= 2:
             split_msg.remove(target_device)
             if "noclean" in split_msg:
@@ -210,7 +264,30 @@ def launch_build(bot, update):
                                  module_to_build
                 human_friendly_description += "Module: %s\n" % \
                                               module_to_build
-
+        if len(schedule_command) > 2:
+            schedule_to_print = schedule_command
+            m = hashlib.sha256()
+            m.update(bytes(schedule_to_print + " " + final_command, "utf-8"))
+            sched_digest = m.hexdigest()
+            with open("/tmp/nolifer-schedule-" + sched_digest, "w") as schedf:
+                schedf.write(final_command)
+                schedf.write("\n")
+                schedf.write("rm -f /tmp/nolifer-schedule-" + sched_digest)
+            schedule_command += " -f /tmp/nolifer-schedule-" + sched_digest
+            result_ = call(schedule_command.split())
+            if result_ != 0:
+                update.message.reply_text(
+                    "Whohoho... Try it again (Hint: the command failed "
+                    "with return code %s)" % result_
+            )
+            else:
+                update.message.reply_text(
+                    "Okay, I scheduled the %s build %s\n\n%s" % \
+                                    ("Release" if is_release else "Test",
+                                    schedule_to_print,
+                                       human_friendly_description.replace(
+                                           "[[NEWLINE]]", "\n")))
+            return
         result_ = call(final_command.split())
         if not result_:
             update.message.reply_text("%s build launched\n\n%s" %
