@@ -245,7 +245,7 @@ def launch_build(bot, update):
                             j += 1
                         j += 1
                     had_repopick = True
-                    repopick_list.replace(
+                    repopick_list = repopick_list.replace(
                         "[[NEWLINE]][[NEWLINE]]", "[[NEWLINE]]")
                 elif not module_to_build:
                     module_to_build = arg
@@ -256,10 +256,12 @@ def launch_build(bot, update):
                     return
 
             if had_repopick:
-                final_command += " -p 'repopick_before_build=%s'" \
-                                 % repopick_list
                 human_friendly_description += "Stuff to repopick:\n%s\n" \
                                               % repopick_list
+                if len(schedule_command) > 2:
+                        repopick_list = repopick_list.replace(" ", "[[SPACE]]")
+                final_command += " -p 'repopick_before_build=%s'" \
+                                 % repopick_list
             if module_to_build:
                 final_command += " -p 'Module_to_build=%s'" % \
                                  module_to_build
