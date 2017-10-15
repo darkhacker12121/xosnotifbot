@@ -312,6 +312,17 @@ def restart_bot(bot, update):
         update.message.reply_text("Sorry, you are not "
                                   "allowed to do that here")
 
+def update_bot(bot, update):
+        if update.message.chat_id in constants.high_privilege_chats:
+        update.message.reply_text("Updating...")
+        with open("/tmp/nolifer-stop-reason", "w") as tmpfile:
+            tmpfile.write("update %s" % update.message.chat_id)
+        # Send SIGTERM to terminate normally
+        os.kill(os.getpid(), signal.SIGTERM)
+    else:
+        update.message.reply_text("Sorry, you are not "
+                                  "allowed to do that here")
+
 def associate_device(bot, update):
     if update.message.from_user.id != 11814515:
         update.message.reply_text("You are not allowed to do this.")
@@ -350,4 +361,5 @@ commands = [
     ["restart", restart_bot],
     ["assocdevice", associate_device],
     ["die", die_],
+    ["update", update_bot],
 ]

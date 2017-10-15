@@ -91,6 +91,9 @@ def start_bot():
         if reason == "restart":
             bot.sendMessage(chat_id=chat_id,
                             text="Restart successful.")
+        elif reason == "update":
+            bot.sendMessage(chat_id=chat_id,
+                            text="Update successful.")
         os.remove("/tmp/nolifer-stop-reason")
     except:
         # Don't bother
