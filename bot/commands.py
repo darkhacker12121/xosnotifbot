@@ -313,7 +313,7 @@ def restart_bot(bot, update):
                                   "allowed to do that here")
 
 def update_bot(bot, update):
-        if update.message.chat_id in constants.high_privilege_chats:
+    if update.message.chat_id in constants.high_privilege_chats:
         update.message.reply_text("Updating...")
         with open("/tmp/nolifer-stop-reason", "w") as tmpfile:
             tmpfile.write("update %s" % update.message.chat_id)
