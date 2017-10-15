@@ -40,22 +40,23 @@ def on_hash_message(bot, update):
     msg_split = update.message.text.split()
     hashtag_item = msg_split[0][1:]
     if update.message.chat_id in constants.high_privilege_chats:
-        if hashtag_item == "latest":
-            try:
-                if len(msg_split) > 1 and \
-                                re.match(r'^[\w-]+$', msg_split[1]) is None:
-                    update.message.reply_text("Nice try ;)")
-                else:
-                    filename = _latest_build_file % \
-                               (msg_split[1] if len(msg_split) > 1
-                                else "oneplus2")
-                    with open(filename, "r") as f:
-                        update.message.reply_text(f.read())
-            except Exception as e:
-                print("Error while getting latest: %s" % e)
-        elif hashtag_item == "modem":
+        if hashtag_item == "modem":
             update.message.reply_text(
                 "https://www.androidfilehost.com/?fid=889764386195914770")
+    elif hashtag_item == "latest":
+        try:
+            if len(msg_split) == 0:
+                update.message.reply_text("Specify the device")
+                return
+            if len(msg_split) > 1 and \
+                            re.match(r'^[\w-]+$', msg_split[1]) is None:
+                update.message.reply_text("Nice try ;)")
+            else:
+                filename = _latest_build_file % msg_split[1]
+                with open(filename, "r") as f:
+                    update.message.reply_text(f.read())
+        except Exception as e:
+            print("Error while getting latest: %s" % e)
 
 hash_message_filter = HashMessageFilter()
 
