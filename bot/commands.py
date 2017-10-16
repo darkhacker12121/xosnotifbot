@@ -346,10 +346,12 @@ def rebuild(bot, update):
                         )
         finalcmdarr = finalcmd.split(" ")
         for param in params:
+            print("  Param %s" % param)
             finalcmdarr.extend(["-p", "%s='%s'" % (param[0], param[1])])
 
+        print("Calling: %s" % finalcmdarr)
         call(finalcmdarr)
-        print("Build %s restarted" % build_id)
+        update.message.reply_text("Build %s restarted" % build_id)
 
 def restart_bot(bot, update):
     if update.message.chat_id in constants.high_privilege_chats:
