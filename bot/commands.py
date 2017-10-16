@@ -316,6 +316,8 @@ def rebuild(bot, update):
             is_multiline = False
             params = []
             for line in file:
+                if len(line) == 0:
+                    continue
                 line_offset = 0
                 if not is_multiline:
                     if line[:2] == "||":
