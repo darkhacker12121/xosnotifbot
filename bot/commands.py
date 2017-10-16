@@ -312,7 +312,8 @@ def rebuild(bot, update):
         msgparams = update.message.text[reblen:].split(" ")
         build_id = msgparams[0]
 
-        with open("%s/builds/" % _jenkins_workspace, "r") as file:
+        with open("%s/builds/%s-params.txt" % (_jenkins_workspace, build_id),
+                    "r") as file:
             is_multiline = False
             params = []
             for line in file:
