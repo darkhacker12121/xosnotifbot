@@ -316,7 +316,8 @@ def rebuild(bot, update):
                     "r") as file:
             is_multiline = False
             params = []
-            for line in file:
+            for raw_line in file:
+                line = raw_line.strip()
                 if len(line) == 0:
                     continue
                 line_offset = 0
@@ -327,11 +328,13 @@ def rebuild(bot, update):
                 elif line[:2] == "§§":
                     is_multiline = False
                     line_offset = 2
-                params.append([line[line_offset:], ""])
                 if line_offset > 0 or not is_multiline:
-                    params[len(params) - 1][1] += line[line.find("=") + 1:]
+                    params.append([
+                        line[line_offset:line.find("=")],
+                        line[line.find("=") + 1:]
+                    ])
                 elif is_multiline:
-                    params[len(params) - 1][1] += "%s\n" % line
+                    params[len(params) - 1][1] += ("%s\n" % line)
                     print("Params: %s" % params)
 
         finalcmd = "ssh -l %s -i %s -o UserKnownHostsFile=%s %s -p %i " \
