@@ -333,6 +333,8 @@ def rebuild(bot, update):
                         line[line_offset:line.find("=")],
                         line[line.find("=") + 1:]
                     ])
+                    if is_multiline:
+                        params[len(params) - 1][1] += "\n"
                 elif is_multiline:
                     params[len(params) - 1][1] += ("%s\n" % line)
                     print("Params: %s" % params)
