@@ -37,6 +37,8 @@ _jenkins_user = getenviron("NOLIFER_JENKINS_USER", "xdevs23")
 _jenkins_project = getenviron("NOLIFER_JENKINS_PROJECT", "halogenOS")
 _jenkins_ssh_key = getenviron("NOLIFER_JENKINS_SSHKEY",
                               "%s/.ssh/id_rsa" % expanduser("~"))
+_jenkins_workspace = getenviron("NOLIFER_JENKINS_WORKSPACE",
+                                "/var/lib/jenkins/%s" % _jenkins_project)
 _jenkins_rom_ver_param = getenviron("NOLIFER_ROM_VER_PARAM", "Rom_version")
 _rom_versions = getenviron("NOLIFER_ROM_VERSIONS", "8.0,7.1").split(",")
 _github_auth_token = getenviron("NOLIFER_GITHUB_TOKEN", "")
@@ -301,6 +303,51 @@ def launch_build(bot, update):
             update.message.reply_text("Cannot launch build, error code %i",
                                       result_)
 
+def rebuild(bot, update):
+    if update.message.chat_id in constants.high_privilege_chats:
+        reblen = len("/rebuild ")
+        if len(update.message.text) <= reblen:
+            update.message.reply_text("Specify a build ID, e. g. 405")
+            return
+        msgparams = update.message.text[reblen:].split(" ")
+        build_id = msgparams[0]
+
+        with open("%s/builds/" % _jenkins_workspace, "r") as file:
+            is_multiline = False
+            params = []
+            for line in file:
+                line_offset = 0
+                if not is_multiline:
+                    if line[:2] == "||":
+                        is_multiline = True
+                        line_offset = 2
+                elif line[:2] == "§§":
+                    is_multiline = False
+                    line_offset = 2
+                params.append([line[line_offset:], ""])
+                if line_offset > 0 or not is_multiline:
+                    params[len(params) - 1][1] += line[line.find("=") + 1:]
+                elif is_multiline:
+                    params[len(params) - 1][1] += "%s\n" % line
+                    print("Params: %s" % params)
+
+        finalcmd = "ssh -l %s -i %s -o UserKnownHostsFile=%s %s -p %i " \
+                   "build %s" \
+                      % (
+                         _jenkins_user,
+                         _jenkins_ssh_key,
+                         _ssh_known_hosts_file,
+                         _jenkins_address,
+                         _jenkins_port,
+                         _jenkins_project
+                        )
+        finalcmdarr = finalcmd.split(" ")
+        for param in params:
+            finalcmdarr.extend(["-p", "%s='%s'" % (param[0], param[1])])
+
+        call(finalcmdarr)
+        print("Build %s restarted" % build_id)
+
 def restart_bot(bot, update):
     if update.message.chat_id in constants.high_privilege_chats:
         update.message.reply_text("Restarting...")
@@ -362,4 +409,5 @@ commands = [
     ["assocdevice", associate_device],
     ["die", die_],
     ["update", update_bot],
+    ["rebuild", rebuild],
 ]
