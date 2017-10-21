@@ -74,6 +74,12 @@ def launch_build(bot, update):
         update.message.reply_text(
             "Hold up, I'm checking what I can do for you...")
 
+        try:
+            requests.get("http://%s:8092/" % _jenkins_address)
+        except RequestException as e:
+            update.message.reply_text("Sorry, Jenkins is currently down.")
+            return
+
         schedule_command = ""
         if "schedule" in split_msg:
             try:
