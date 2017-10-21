@@ -417,6 +417,34 @@ def runs(bot, update):
 def die_(bot, update):
     update.message.reply_text("Done")
 
+def status(bot, update):
+    update.message.reply_text("Lemme just hit 'em up and check...")
+    statustext = "Current status:\nJenkins: "
+
+    try:
+        requests.get("http://%s:8092/" % _jenkins_address)
+        statustext += "\U00002257"
+    except RequestException as e:
+        statustext += "\U00002167"
+
+    statustext += "\nGerrit: "
+
+    try:
+        requests.get("https://review.halogenos.org/")
+        statustext += "\U00002257"
+    except RequestException as e:
+        statustext += "\U00002167"
+
+    statustext += "\nWebsite: "
+
+    try:
+        requests.get("https://halogenos.org/")
+        statustext += "\U00002257"
+    except RequestException as e:
+        statustext += "\U00002167"
+
+    update.message.reply_text(statustext)
+
 commands = [
     ["id", get_id],
     ["runs", runs],
@@ -426,4 +454,5 @@ commands = [
     ["die", die_],
     ["update", update_bot],
     ["rebuild", rebuild],
+    ["status", status],
 ]
