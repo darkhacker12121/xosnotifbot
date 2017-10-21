@@ -426,7 +426,7 @@ def status(bot, update):
     try:
         requests.get("http://%s:8092/" % _jenkins_address, verify=False)
         statustext += emojize(":white_check_mark:", use_aliases=True)
-    except RequestException as e:
+    except Exception as e:
         statustext += emojize(":x:", use_aliases=True)
 
     statustext += "\nGerrit: "
@@ -434,7 +434,7 @@ def status(bot, update):
     try:
         requests.get("https://review.halogenos.org/", verify=False)
         statustext += emojize(":white_check_mark:", use_aliases=True)
-    except RequestException as e:
+    except Exception as e:
         statustext += emojize(":x:", use_aliases=True)
 
     statustext += "\nWebsite: "
@@ -442,7 +442,7 @@ def status(bot, update):
     try:
         requests.get("https://halogenos.org/", verify=False)
         statustext += emojize(":white_check_mark:", use_aliases=True)
-    except RequestException as e:
+    except Exception as e:
         statustext += emojize(":x:", use_aliases=True)
 
     update.message.reply_text(statustext)
