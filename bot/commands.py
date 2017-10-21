@@ -24,6 +24,7 @@ import hashlib
 from subprocess import call
 from os.path import expanduser
 from requests import exceptions
+from emoji import emojize
 
 # external lib imports
 import requests

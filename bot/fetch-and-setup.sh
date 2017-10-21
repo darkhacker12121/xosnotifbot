@@ -61,6 +61,7 @@ else
     rm -f *.pyc
     rm -rf pip_modules
     sudo pip3 install python-telegram-bot --upgrade
+    sudo pip3 install emoji --upgrade
     cd ..
   fi
 fi
