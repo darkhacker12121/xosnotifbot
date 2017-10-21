@@ -23,6 +23,7 @@ import re
 import hashlib
 from subprocess import call
 from os.path import expanduser
+from requests import exceptions
 
 # external lib imports
 import requests
@@ -75,7 +76,7 @@ def launch_build(bot, update):
             "Hold up, I'm checking what I can do for you...")
 
         try:
-            requests.get("http://%s:8092/" % _jenkins_address)
+            requests.get("http://%s:8092/" % _jenkins_address, verify=False)
         except RequestException as e:
             update.message.reply_text("Sorry, Jenkins is currently down.")
             return
@@ -422,7 +423,7 @@ def status(bot, update):
     statustext = "Current status:\nJenkins: "
 
     try:
-        requests.get("http://%s:8092/" % _jenkins_address)
+        requests.get("http://%s:8092/" % _jenkins_address, verify=False)
         statustext += "\U00002257"
     except RequestException as e:
         statustext += "\U00002167"
@@ -430,7 +431,7 @@ def status(bot, update):
     statustext += "\nGerrit: "
 
     try:
-        requests.get("https://review.halogenos.org/")
+        requests.get("https://review.halogenos.org/", verify=False)
         statustext += "\U00002257"
     except RequestException as e:
         statustext += "\U00002167"
@@ -438,7 +439,7 @@ def status(bot, update):
     statustext += "\nWebsite: "
 
     try:
-        requests.get("https://halogenos.org/")
+        requests.get("https://halogenos.org/", verify=False)
         statustext += "\U00002257"
     except RequestException as e:
         statustext += "\U00002167"
