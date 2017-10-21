@@ -78,7 +78,7 @@ def launch_build(bot, update):
 
         try:
             requests.get("http://%s:8092/" % _jenkins_address, verify=False)
-        except RequestException as e:
+        except Exception as e:
             update.message.reply_text("Sorry, Jenkins is currently down.")
             return
 
