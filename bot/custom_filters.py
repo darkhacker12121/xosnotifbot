@@ -43,7 +43,7 @@ def on_hash_message(bot, update):
         if hashtag_item == "modem":
             update.message.reply_text(
                 "https://www.androidfilehost.com/?fid=889764386195914770")
-    elif hashtag_item == "latest":
+    if hashtag_item == "latest":
         try:
             if len(msg_split) == 0:
                 update.message.reply_text("Specify the device")
