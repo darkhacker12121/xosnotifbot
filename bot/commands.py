@@ -56,7 +56,9 @@ def launch_build(bot, update):
         if "'" in msg_no_split \
                 or '"' in msg_no_split \
                 or ";" in msg_no_split \
-                or "&" in msg_no_split:
+                or "&" in msg_no_split \
+                or "$(" in msg_no_split \
+                or "`" in msg_no_split:
             update.message.reply_text("Don't even try")
             return
 
