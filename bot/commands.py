@@ -42,7 +42,7 @@ _jenkins_ssh_key = getenviron("NOLIFER_JENKINS_SSHKEY",
 _jenkins_workspace = getenviron("NOLIFER_JENKINS_WORKSPACE",
                                 "/var/lib/jenkins/%s" % _jenkins_project)
 _jenkins_rom_ver_param = getenviron("NOLIFER_ROM_VER_PARAM", "Rom_version")
-_rom_versions = getenviron("NOLIFER_ROM_VERSIONS", "8.0,7.1").split(",")
+_rom_versions = getenviron("NOLIFER_ROM_VERSIONS", "8.1,8.0,7.1").split(",")
 _github_auth_token = getenviron("NOLIFER_GITHUB_TOKEN", "")
 _ssh_known_hosts_file = getenviron("NOLIFER_KNOWN_HOSTS_FILE",
                                    "%s/.ssh/known_hosts" % expanduser("~"))
