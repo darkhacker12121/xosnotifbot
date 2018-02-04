@@ -47,6 +47,8 @@ _github_auth_token = getenviron("NOLIFER_GITHUB_TOKEN", "")
 _ssh_known_hosts_file = getenviron("NOLIFER_KNOWN_HOSTS_FILE",
                                    "%s/.ssh/known_hosts" % expanduser("~"))
 _chat_id_directory = getenviron("NOLIFER_CHAT_ID_DIR", "")
+# Script file or command used to shut down the machine
+_shutdown_script = getenviron("NOLIFER_SHUTDOWN_SCRIPT", "systemctl poweroff")
 
 def launch_build(bot, update):
     # Family group or my private chat
@@ -449,6 +451,14 @@ def status(bot, update):
 
     update.message.reply_text(statustext)
 
+def shutdown(bot, update):
+    if update.message.from_user.id != 11814515:
+        update.message.reply_text("Hold on a second! Whatchu tryna do?")
+    else:
+        update.message.reply_text("Aye aye, sir.")
+        call(_shutdown_script.split(" "))
+        update.message.reply_text("Looks like it worked.")
+
 commands = [
     ["id", get_id],
     ["runs", runs],
@@ -459,4 +469,5 @@ commands = [
     ["update", update_bot],
     ["rebuild", rebuild],
     ["status", status],
+    ["shutdown", shutdown],
 ]
