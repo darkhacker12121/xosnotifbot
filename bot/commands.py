@@ -426,7 +426,7 @@ def status(bot, update):
     statustext = "Current status:\nJenkins: "
 
     try:
-        requests.get("http://%s:8092/" % _jenkins_address, verify=False)
+        requests.get("http://%s:8092/" % _jenkins_address, verify=False, timeout=5)
         statustext += emojize(":white_check_mark:", use_aliases=True)
     except Exception as e:
         statustext += emojize(":x:", use_aliases=True)
@@ -434,7 +434,7 @@ def status(bot, update):
     statustext += "\nGerrit: "
 
     try:
-        requests.get("https://review.halogenos.org/", verify=False)
+        requests.get("https://review.halogenos.org/", verify=False, timeout=5)
         statustext += emojize(":white_check_mark:", use_aliases=True)
     except Exception as e:
         statustext += emojize(":x:", use_aliases=True)
@@ -442,7 +442,7 @@ def status(bot, update):
     statustext += "\nWebsite: "
 
     try:
-        requests.get("https://halogenos.org/", verify=False)
+        requests.get("https://halogenos.org/", verify=False, timeout=5)
         statustext += emojize(":white_check_mark:", use_aliases=True)
     except Exception as e:
         statustext += emojize(":x:", use_aliases=True)
