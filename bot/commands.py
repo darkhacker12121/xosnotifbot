@@ -416,13 +416,13 @@ def get_id(bot, update):
 
 
 def runs(bot, update):
-    update.message.reply_text("Where u going so fast?!")
+    update.message.reply_text("Change is good, so get out.")
 
 def die_(bot, update):
     update.message.reply_text("Done")
 
 def status(bot, update):
-    update.message.reply_text("Lemme just hit 'em up and check...")
+    update.message.reply_text("Checking services... Please wait.")
     statustext = "Current status:\nJenkins: "
 
     try:
